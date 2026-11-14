@@ -1,0 +1,11 @@
+# Server logs, backups, local databases and secrets must never be committed.
+error_log
+*.log
+*.bak
+*.bak-*
+index.php.bak*
+*.sqlite
+.env
+api/sms-config.php
+admin/includes/config.local.php
+push-data/subscriptions.json

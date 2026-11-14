@@ -1,5 +1,5 @@
 /* Vision Guard service worker. Bump VERSION on every deploy. */
-const VERSION = 'vg-v10';
+const VERSION = 'vg-v11';
 const STATIC = `${VERSION}-static`;
 const PAGES = `${VERSION}-pages`;
 const IMAGES = `${VERSION}-img`;

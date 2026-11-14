@@ -66,7 +66,9 @@ h1{font-size:22px;margin:0 0 6px}p{margin:0 0 12px;color:var(--muted)}
 label{display:block;font-weight:700;margin:12px 0 4px}input{width:100%;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
 button{margin-top:16px;width:100%;padding:13px;border:0;border-radius:10px;background:var(--brand);color:#fff;font-size:16px;font-weight:700;cursor:pointer}
 .err{color:#b3261e;font-weight:700}.steps{display:flex;gap:6px;margin:16px 0}.s{flex:1;height:8px;border-radius:4px;background:var(--line)}.s.on{background:var(--brand)}a{color:var(--brand)}
-</style></head><body><div class="w"><div class="c">
+</style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400..800&display=swap">
+<link rel="stylesheet" href="/vg-design-pages.css">
+</head><body><div class="w"><div class="c">
 <h1>تتبّع طلبك</h1>
 <?php if ($order): $L = $labels[$order['status']] ?? $labels['new']; ?>
 <p>طلب رقم <b>#<?= (int)$order['id'] ?></b> · <?= h(substr((string)$order['created_at'], 0, 10)) ?></p>

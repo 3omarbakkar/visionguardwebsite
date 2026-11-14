@@ -60,11 +60,11 @@ $wa = 'https://wa.me/201105006854?text=' . rawurlencode('مرحبًا Vision Gua
 <title><?= h($cat['title']) ?></title>
 <meta name="description" content="<?= h($cat['desc']) ?>">
 <link rel="canonical" href="<?= h($pageUrl) ?>">
-<meta name="theme-color" content="#0667a5">
+<meta name="theme-color" content="#202020">
 <meta property="og:type" content="website"><meta property="og:url" content="<?= h($pageUrl) ?>"><meta property="og:site_name" content="Vision Guard"><meta property="og:title" content="<?= h($cat['title']) ?>"><meta property="og:description" content="<?= h($cat['desc']) ?>"><meta property="og:locale" content="ar_EG">
 <meta property="og:image" content="https://visionguardeg.com/og-image.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400..800&family=Inter:wght@400..600&family=Sometype+Mono:wght@400..500&display=swap">
 <?php foreach ($ld as $block): ?>
 <script type="application/ld+json"><?= json_encode($block, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?></script>
 <?php endforeach; ?>
@@ -96,6 +96,7 @@ footer{padding:26px 0 40px;color:var(--mut);font-size:14px;text-align:center}
 <meta name="apple-mobile-web-app-title" content="Vision Guard">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="stylesheet" href="/pwa.css">
+<link rel="stylesheet" href="/vg-design.css?v=<?php echo (int)@filemtime(__DIR__ . '/vg-design.css'); ?>">
 </head>
 <body>
 <header><div class="w"><a class="logo" href="/">Vision Guard</a><a class="cta" href="<?= h($wa) ?>" rel="noopener">اطلب عبر واتساب</a></div></header>

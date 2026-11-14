@@ -1,0 +1,29 @@
+/*
+ * Vision Guard - design tokens for standalone pages (terms, privacy, shipping, order tracking).
+ * Same DESIGN.md palette as vg-design.css, but keyed to the OS colour scheme because these
+ * pages have no theme toggle. Presentational only; load it last in <head>.
+ */
+:root{
+  --bg:#f8f9fa;--card:#ffffff;--surface:#ffffff;--text:#202020;--ink:#202020;--muted:#646464;
+  --brand:#202020;--on-brand:#ffffff;--line:#e8e8e8;--link:#0072ce;
+  --canvas:#ffffff;--r-card:12px;--r-large:20px;--r-pill:9999px;
+  --font-b:'Plus Jakarta Sans','Cairo',"Segoe UI",Tahoma,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#1a1a1a;--card:#111111;--surface:#111111;--text:#f4f4f4;--ink:#f4f4f4;--muted:#b3b3b3;
+    --brand:#ffffff;--on-brand:#202020;--line:#2a2a2a;--link:#4aa8ff;--canvas:#0a0a0a}
+}
+html body{background:var(--canvas);color:var(--text);font-family:var(--font-b)}
+html body :is(h1,h2,h3){font-weight:800}
+html[lang="en"] body :is(h1,h2){letter-spacing:-.03em}
+html body :is(article,.c){background:var(--card);border:1px solid var(--line);border-radius:var(--r-large);box-shadow:none}
+html body :is(.cta,header button,button){border-radius:var(--r-pill)}
+html body .cta{background:var(--brand);color:var(--on-brand)}
+html body header a,html body h2{color:var(--brand)}
+html body input{border-radius:9px;border:1px solid #d4d4d4;background:var(--bg);color:var(--text);font-family:var(--font-b)}
+html body input:focus{outline:none;border-color:#0091ff;box-shadow:0 0 0 3px rgba(0,145,255,.18)}
+html body .c button[type="submit"]{background:var(--brand);color:var(--on-brand)}
+html body .s.on{background:var(--brand)}
+html body a{color:var(--link)}
+html body :focus-visible{outline:3px solid #0091ff;outline-offset:2px}
+@media (prefers-color-scheme:dark){html body .cta{color:var(--on-brand)}}

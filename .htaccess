@@ -6,11 +6,16 @@ RewriteEngine On
 RewriteCond %{HTTPS} !=on
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
+# Never serve dot-files / dot-directories (.git, .env ...), except /.well-known/ used for SSL validation.
+RewriteRule "(^|/)\.(?!well-known(/|$))" - [F,L]
+
 # Never serve include files or provider credentials directly.
 RewriteRule ^(?:api/(?:_[^/]+|sms-config)\.php|admin/includes/.*)$ - [F,L]
 
-# Block editor/backup/database/config artifacts. This also blocks names such as index.php.bak-2026.
-<FilesMatch "(?i)(\.(?:bak|backup|old|orig|save|sql|gz|zip|log|env|ini|conf|swp|tmp|dist|inc)(?:[-.]|$)|~)$">
+# Block editor/backup/database/config artifacts and server logs.
+# Matches the extension anywhere it is followed by end-of-name or a separator, so
+# index.php.bak-menu-20261114, config.php.old, dump.sql.gz and error_log are all denied.
+<FilesMatch "(?i)(\.(?:bak|backup|old|orig|save|sql|gz|zip|log|env|ini|conf|swp|tmp|dist|inc|md|sqlite)([-._].*)?|~|^error_log)$">
   <IfModule mod_authz_core.c>
     Require all denied
   </IfModule>
