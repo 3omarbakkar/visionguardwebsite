@@ -318,6 +318,8 @@ main{color:#0f1b2d}
 
 /* vg-burger-fix */.vg-head button{color:#0f1b2d !important;background:#fff !important;border:1px solid #e1e8f1 !important;border-radius:10px}.vg-head button svg{color:#0f1b2d !important}
 </style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&display=swap">
+<link rel="stylesheet" href="vg-admin.css?v=<?= (int)@filemtime(dirname(__DIR__) . '/vg-admin.css') ?>">
 </head>
 <body>
 <div class="wrap">

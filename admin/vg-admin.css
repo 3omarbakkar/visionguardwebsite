@@ -1,0 +1,94 @@
+/*
+ * Vision Guard admin - design layer (DESIGN.md tokens, same system as /vg-design.css).
+ * Presentational only; loaded LAST in <head> of layout_top.php and staff_login.php.
+ * It overrides the inline admin styles (many use !important, hence the heavy selectors).
+ * No markup, form field, route, permission or script depends on this file. Delete the <link> to revert.
+ * Functional colours are kept: order-card status stripes, KPI tones, in/out badges.
+ */
+:root{
+  --ink:#202020;--slate:#646464;--bone:#e8e8e8;--cloud:#d4d4d4;--mist:#f8f9fa;--signal:#0091ff;--violet:#6647f0;
+  --a-text:#202020;--a-muted:#646464;--a-border:#e8e8e8;--a-hover:rgba(0,0,0,.045);
+  --a-font:'Plus Jakarta Sans','Cairo',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+html body{background:var(--mist)!important;color:var(--a-text);font-family:var(--a-font)!important;font-size:15px}
+html body :is(input,select,textarea,button){font-family:var(--a-font)}
+html body :is(h1,h2,h3,h4){font-weight:800;color:var(--a-text)}
+html[lang="en"] body :is(h1,h2){letter-spacing:-.03em}
+html body main{color:var(--a-text)}
+html body main>:is(p,h1,h2){color:var(--a-text)}
+html body .muted,html body label{color:var(--a-muted)}
+
+/* ---- sidebar: white, ink active pill ---- */
+html body nav.side{background:#fff!important;color:var(--a-text)!important;border:0!important;border-inline-start:1px solid var(--a-border)!important;box-shadow:none!important}
+html body nav.side a,html body nav.side summary{color:var(--a-text)!important;border-radius:9999px!important;margin:2px 12px!important;font-weight:600}
+html body nav.side summary{font-weight:700}
+html body nav.side a:hover,html body nav.side summary:hover{background:var(--a-hover)!important;color:var(--a-text)!important}
+html body nav.side a.active{background:var(--ink)!important;color:#fff!important;box-shadow:none!important;font-weight:700}
+html body nav.side svg,html body nav.side .ic{color:inherit!important;stroke:currentColor;opacity:.9}
+html body nav.side details[open]{background:transparent!important;margin:2px 0}
+html body nav.side details a{background:transparent;padding-inline-start:38px}
+html body nav.side .sep{background:var(--a-border)!important}
+html body nav.side h1{background:#fff!important;box-shadow:none!important;border-bottom:1px solid var(--a-border)!important}
+html body nav.side h1::after{color:var(--a-muted)!important}
+
+/* ---- top header ---- */
+html body .vg-head .vg-hb,html body .vg-head a,html body .vg-head .vg-user,html body .vg-head button{background:#fff!important;color:var(--a-text)!important;border:1px solid var(--a-border)!important;border-radius:9999px!important;box-shadow:none!important}
+html body .vg-head .vg-hb:hover,html body .vg-head a:hover{background:var(--a-hover)!important}
+html body .vg-head svg,html body .vg-head .vg-hb svg{color:var(--a-text)!important}
+html body .vg-title{font-family:var(--a-font);font-weight:800}
+
+/* ---- surfaces ---- */
+html body :is(.card,.kpi,.topbar,.vg-box){background:#fff;border:1px solid var(--a-border)!important;border-radius:12px!important;box-shadow:none!important}
+html body .oc{background:#fff;border-top:1px solid var(--a-border)!important;border-bottom:1px solid var(--a-border)!important;border-left:1px solid var(--a-border)!important;border-radius:12px!important;box-shadow:none!important}
+html body .oc:hover,html body a.card:hover,html body .quick a:hover{box-shadow:none!important;transform:none;border-color:var(--ink)!important}
+html body .oc:hover{border-top-color:var(--ink)!important;border-bottom-color:var(--ink)!important;border-left-color:var(--ink)!important}
+html body .vg-box{background:var(--mist)}
+html body .kpis .kpi{border-radius:12px!important;padding:16px 18px 19px}
+html body .kpi b,html body .kval{font-family:var(--a-font);font-weight:800}
+html body .kchip{border-radius:9999px!important}
+html body .quick a{border-radius:12px}
+html body main img{outline:0}
+html body .thumb{border-radius:10px;background:#fff}
+
+/* ---- buttons: filled dark pill / ghost pill ---- */
+html body .btn,html body button.btn,html body a.btn{background:var(--ink);color:#fff;border:1px solid var(--ink);border-radius:9999px;font-weight:700;box-shadow:none}
+html body .btn:hover{background:var(--ink);box-shadow:none;opacity:.88}
+html body .btn.secondary{background:#fff;color:var(--a-text);border:1px solid var(--cloud)}
+html body .btn.secondary:hover{background:var(--a-hover);opacity:1}
+html body .btn.danger{background:#b42318;border-color:#b42318;color:#fff}
+html body .btn:disabled{opacity:.45}
+html body .vg-tabs a,html body .vg-tabs button{background:#fff!important;color:var(--a-text)!important;border:1px solid var(--a-border)!important;border-radius:9999px!important;font-weight:700}
+html body .vg-tabs a:not(.on):hover{background:var(--a-hover)!important}
+html body .vg-tabs a.on,html body .vg-tabs a.active{background:var(--ink)!important;border-color:var(--ink)!important;color:#fff!important}
+html body .vg-tabs a.on b,html body .vg-tabs a.active b{color:inherit}
+
+/* ---- forms ---- */
+html body :is(input[type=text],input[type=number],input[type=email],input[type=tel],input[type=password],input[type=search],input[type=date],select,textarea){border:1px solid var(--cloud);border-radius:9px;background:#fff;color:var(--a-text)}
+html body :is(input,select,textarea):focus-visible{border-color:var(--signal);box-shadow:0 0 0 3px rgba(0,145,255,.18);outline:0}
+html body :is(a,button,summary):focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+html body input[type=checkbox],html body input[type=radio]{accent-color:var(--ink)}
+
+/* ---- tables ---- */
+html body th,html body .card table th,html body .vg-box table th{background:var(--mist);color:var(--a-muted);font-weight:700;font-size:12.5px;border-bottom:1px solid var(--a-border)}
+html body tbody tr:hover,html body .card table tbody tr:hover{background:var(--mist)}
+html body td{border-bottom:1px solid #f0f0f0}
+
+/* ---- pills & messages ---- */
+html body .badge{border-radius:9999px;font-weight:600}
+html body .badge.in{background:rgba(110,231,183,.32);color:#067647}
+html body .badge.out{background:#fde7ec;color:#b42318}
+html body .flash{border-radius:12px;box-shadow:none;font-weight:600}
+html body .flash.ok{background:rgba(110,231,183,.32);color:#067647}
+html body .flash.err{background:#fde7ec;color:#b42318}
+
+/* ---- login (layout_top card) and standalone staff login ---- */
+html body form.box{border-radius:20px;border:1px solid var(--a-border);box-shadow:none;background:#fff}
+html body form.box .tag{background:var(--ink);color:#fff;border-radius:9999px}
+html body form.box button{background:var(--ink);color:#fff;border-radius:9999px;font-weight:700}
+html body form.box button:hover{background:var(--ink);opacity:.88}
+html body form.box input[type=text],html body form.box input[type=password]{border-radius:9px;border-color:var(--cloud)}
+html body form.box input:focus{outline:0;border-color:var(--signal);box-shadow:0 0 0 3px rgba(0,145,255,.18)}
+html body form.box .foot a{color:#0072ce}
+html body form.box .err{background:#fde7ec;color:#b42318;border-radius:12px}
+html body form.box .note{background:rgba(110,231,183,.32);color:#067647;border-radius:12px}
+html body .card .topbar{border:0!important;padding:0;background:transparent}

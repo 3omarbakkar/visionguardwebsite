@@ -65,6 +65,8 @@ button:hover{background:var(--brand-dark)}
 .foot{margin-top:16px;text-align:center;font-size:13px;color:var(--muted)}
 .foot a{color:var(--brand)}
 </style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400..800&display=swap">
+<link rel="stylesheet" href="vg-admin.css?v=<?= (int)@filemtime(__DIR__ . '/vg-admin.css') ?>">
 </head>
 <body>
 <form class="box" method="post" autocomplete="off">
