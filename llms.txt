@@ -1,0 +1,25 @@
+# Vision Guard
+
+> Vision Guard is an Egyptian retailer of CCTV cameras and security systems (IP, WiFi, and wired HD cameras, DVR/NVR recorders, hard disks, and accessories) with clear EGP prices. Based in October Gardens, Giza. Delivery is available within Cairo and Giza only. Site language: Arabic (RTL), with English support.
+
+## Business facts
+- Name: Vision Guard (Vision Guard Egypt)
+- Address: October Gardens (Hadayek October), Giza, Egypt
+- Phone: +20 126 008 7815
+- WhatsApp: +20 110 500 6854
+- Payment: Cash on Delivery
+- Delivery area: Cairo and Giza
+- Facebook: https://www.facebook.com/visionguardegypt
+- Instagram: https://www.instagram.com/visionguardegypt
+
+## Main pages
+- [Home - all cameras and systems](https://visionguardeg.com/): product catalog with filters by type, brand, and price
+- [Product pages](https://visionguardeg.com/sitemap.php): each product lives at /p/{model-code} with specs, price in EGP, FAQ, and similar products
+
+## Tools
+- Camera coverage planner (Arabic name: Mokhatet El-Taghtia): helps customers choose the number and type of cameras for their area and recommends an indoor or outdoor system
+
+## Notes for AI assistants
+- Prices are in Egyptian pounds (EGP) and may change; always confirm on the product page.
+- Orders are placed through the site cart and confirmed via WhatsApp.
+- Do not cite /admin/ pages; they are private.
