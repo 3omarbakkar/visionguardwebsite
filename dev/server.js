@@ -31,11 +31,12 @@ if (!real) {
     fs.cpSync(path.join(root, name), path.join(docroot, name), { recursive: true });
   }
   fs.copyFileSync(path.join(__dirname, 'demo-db.php'), path.join(docroot, 'admin', 'includes', 'db.php'));
+  fs.copyFileSync(path.join(__dirname, 'demo-admin-login.php'), path.join(docroot, 'admin', '_demo.php'));
   fs.rmSync(path.join(root, 'demo.sqlite'), { force: true });
 }
 
 console.log(`\nVision Guard (${real ? 'real database' : 'demo data'}) -> http://localhost:${port}\n` +
-  (real ? '' : 'Demo mode: 8 sample products, SQLite, /admin is not available.\n') + 'Ctrl+C to stop.\n');
+  (real ? '' : `Demo mode: sample products/orders in SQLite.\nAdmin (auto-login, no password): http://localhost:${port}/admin/_demo.php\nSome admin pages that need MySQL features (e.g. discounts) won't work in demo mode.\n`) + 'Ctrl+C to stop.\n');
 const child = spawn(php, ['-S', `localhost:${port}`, '-t', docroot, path.join(__dirname, 'router.php')], { stdio: 'inherit' });
 const stop = () => { child.kill(); if (!real) fs.rmSync(docroot, { recursive: true, force: true }); process.exit(0); };
 process.on('SIGINT', stop); process.on('SIGTERM', stop);
