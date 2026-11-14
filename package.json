@@ -1,0 +1,10 @@
+{
+  "name": "visionguard-site",
+  "private": true,
+  "description": "Local dev helpers for the Vision Guard PHP site",
+  "scripts": {
+    "dev": "node dev/server.js",
+    "dev:real": "node dev/server.js --real"
+  },
+  "engines": { "node": ">=16.7" }
+}

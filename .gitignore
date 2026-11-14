@@ -9,3 +9,8 @@ index.php.bak*
 api/sms-config.php
 admin/includes/config.local.php
 push-data/subscriptions.json
+
+# local dev
+.dev-site/
+demo.sqlite
+node_modules/
