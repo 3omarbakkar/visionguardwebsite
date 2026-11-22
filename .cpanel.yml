@@ -5,4 +5,4 @@ deployment:
     # server-only files (config.local.php, push-data/, uploads, logs).
     - export DEPLOYPATH=$HOME/public_html/
     - /bin/mkdir -p $DEPLOYPATH
-    - /usr/bin/rsync -rlptD --exclude='.git' --exclude='.cpanel.yml' --exclude='.gitignore' --exclude='dev' --exclude='README.md' --exclude='package.json' --exclude='*.sql' --exclude='push-data' ./ $DEPLOYPATH
+    - /usr/bin/rsync -rlt --chmod=D755,F644 --exclude='.git' --exclude='.cpanel.yml' --exclude='.gitignore' --exclude='dev' --exclude='README.md' --exclude='package.json' --exclude='*.sql' --exclude='push-data' ./ $DEPLOYPATH

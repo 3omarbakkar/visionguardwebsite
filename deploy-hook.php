@@ -20,7 +20,7 @@ if ($event !== 'push' || ($p['ref'] ?? '') !== 'refs/heads/main') exit("ignored\
 $repo = escapeshellarg($cfg['repo']);
 $dest = escapeshellarg(rtrim($home, '/') . '/public_html/');
 $cmd  = "cd $repo && git fetch origin main 2>&1 && git reset --hard origin/main 2>&1"
-      . " && /usr/bin/rsync -rlptD --exclude='.git' --exclude='.cpanel.yml' --exclude='.gitignore' --exclude='dev'"
+      . " && /usr/bin/rsync -rlt --chmod=D755,F644 --exclude='.git' --exclude='.cpanel.yml' --exclude='.gitignore' --exclude='dev'"
       . " --exclude='README.md' --exclude='package.json' --exclude='*.sql' --exclude='push-data' ./ $dest 2>&1";
 exec($cmd, $out, $rc);
 http_response_code($rc === 0 ? 200 : 500);
