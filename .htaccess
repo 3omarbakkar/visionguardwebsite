@@ -20,6 +20,9 @@ RewriteRule ^(?:api/(?:_[^/]+|sms-config)\.php|admin/includes/.*)$ - [F,L]
   </IfModule>
 </FilesMatch>
 
+# /admin without a trailing slash must land on the admin folder (its pages use relative redirects).
+RewriteRule ^admin$ /admin/ [R=301,L]
+
 # Site pages.
 RewriteRule ^(shop|planner|about|faq|contact|cart|account)/$ /$1 [R=301,L]
 RewriteRule ^(shop|planner|about|faq|contact|cart|account)$ index.php?page=$1 [L,QSA]
