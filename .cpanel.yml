@@ -1,0 +1,8 @@
+---
+deployment:
+  tasks:
+    # Deploys to the account's public_html. rsync without --delete keeps
+    # server-only files (config.local.php, push-data/, uploads, logs).
+    - export DEPLOYPATH=$HOME/public_html/
+    - /bin/mkdir -p $DEPLOYPATH
+    - /usr/bin/rsync -rlptD --exclude='.git' --exclude='.cpanel.yml' --exclude='.gitignore' --exclude='dev' --exclude='README.md' --exclude='package.json' --exclude='*.sql' --exclude='push-data' ./ $DEPLOYPATH
