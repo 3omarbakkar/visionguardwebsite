@@ -2,10 +2,11 @@
 #vg-install{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:9998;
   display:none;align-items:center;gap:4px;max-width:min(280px,calc(100vw - 96px));padding:0 2px 0 8px;border-radius:999px;
   background:rgba(31,49,84,.38);color:#fff;font-size:.72rem;line-height:1.25;border:1px solid rgba(255,255,255,.10);
-  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(6px);box-shadow:none}
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:none}
 #vg-install.show{display:flex}
 #vg-install .t{flex:1;padding:0 4px}
-#vg-install button{min-height:34px;min-width:36px;border:0;background:transparent;font:inherit;cursor:pointer;color:inherit}
+#vg-install button{position:relative;min-height:32px;min-width:36px;border:0;background:transparent;font:inherit;cursor:pointer;color:inherit}
+#vg-install button::after{content:'';position:absolute;inset:-6px -2px}
 #vg-install .go{color:#05b3e9;font-weight:700;padding:0 8px}
 #vg-install .x{color:rgba(255,255,255,.7);font-size:1.1rem}
 #vg-install button:focus-visible{outline:2px solid #05b3e9;outline-offset:-2px;border-radius:999px}
@@ -28,3 +29,16 @@ html.vg-standalone #vg-install{display:none}
   #vg-nav a:focus-visible{outline:2px solid #05b3e9;outline-offset:-4px}
 }
 @keyframes vg-up{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+
+/* Calmer banners: light surface, no blue glow */
+#vg-install{background:#fff;color:#1f3154;border:1px solid rgba(31,49,84,.12);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:0 4px 16px rgba(31,49,84,.08)}
+#vg-install .go{color:#0667a5}
+#vg-install .x{color:rgba(31,49,84,.6)}
+#vg-update{background:#fff;color:#1f3154;border:1px solid rgba(31,49,84,.12);box-shadow:0 4px 16px rgba(31,49,84,.08)}
+#vg-update button{background:#0667a5;color:#fff}
+/* Compare = secondary outline, add-to-cart stays solid */
+.cmpb{background:transparent !important;color:#0667a5 !important;border:1px solid #0667a5 !important}
+
+html body button.cmpb{background:transparent !important;color:#0667a5 !important;border:1px solid #0667a5 !important}
+/* Install banner is a phone-only prompt: hide it on desktop so it never covers the footer */
+@media (min-width:821px){#vg-install{display:none !important}}

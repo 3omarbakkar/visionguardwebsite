@@ -47,7 +47,7 @@ require __DIR__ . '/includes/layout_top.php';
 
 <div class="card">
 <table>
-  <tr><th>صورة</th><th>الاسم</th><th>القسم</th><th>الماركة</th><th>السعر</th><th>الحالة</th><th></th></tr>
+  <tr><th>صورة</th><th>الاسم</th><th>القسم</th><th>الماركة</th><th>السعر</th><th>الحالة</th><th>الكمية</th><th></th></tr>
   <?php foreach ($products as $p): ?>
   <tr>
     <td>
@@ -64,7 +64,12 @@ require __DIR__ . '/includes/layout_top.php';
     <td class="muted"><?= htmlspecialchars($opt['categories'][$p['category']] ?? $p['category']) ?></td>
     <td class="muted"><?= htmlspecialchars($p['brand']) ?></td>
     <td><?= number_format((float)$p['price'], 2) ?> ج.م<?php if ($p['discount_percent']): ?><br><span class="muted">خصم <?= (int)$p['discount_percent'] ?>%</span><?php endif; ?></td>
-    <td><span class="badge <?= $p['in_stock'] ? 'in' : 'out' ?>"><?= $p['in_stock'] ? 'متوفر' : 'غير متوفر' ?></span></td>
+    <?php
+      if ($p['stock_qty'] === null) { $vgS = $p['in_stock'] ? ['in', 'متاح'] : ['out', 'غير متاح']; $vgQt = 'غير متتبع'; }
+      else { $vgN = (int)$p['stock_qty']; $vgQt = (string)$vgN; $vgS = $vgN <= 0 ? ['out', 'نفد'] : ($vgN <= 3 ? ['low', 'منخفض'] : ['in', 'متاح']); }
+    ?>
+    <td><span class="badge <?= $vgS[0] ?>"<?= $vgS[0] === 'low' ? ' style="background:#fef3c7;color:#92400e"' : '' ?>><?= $vgS[1] ?></span></td>
+    <td class="muted" style="white-space:nowrap"><a href="inventory.php?f=&q=<?= urlencode((string)$p['name_ar']) ?>" title="تعديل الكمية من المخزون"><?= htmlspecialchars($vgQt) ?></a></td>
     <td style="white-space:nowrap">
       <a class="btn secondary sm" href="product_form.php?id=<?= (int)$p['id'] ?>">تعديل</a>
       <form method="post" action="product_delete.php" style="display:inline" onsubmit="return confirm('تأكيد حذف المنتج؟');">
@@ -75,7 +80,7 @@ require __DIR__ . '/includes/layout_top.php';
     </td>
   </tr>
   <?php endforeach; ?>
-  <?php if (!$products): ?><tr><td colspan="7" class="muted">مفيش منتجات مطابقة.</td></tr><?php endif; ?>
+  <?php if (!$products): ?><tr><td colspan="8" class="muted">مفيش منتجات مطابقة.</td></tr><?php endif; ?>
 </table>
 </div>
 <?php require __DIR__ . '/includes/layout_bottom.php'; ?>

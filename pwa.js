@@ -6,19 +6,21 @@
     ? { title: 'ثبّت تطبيق Vision Guard', sub: 'وصول أسرع وإشعارات بالعروض', go: 'تثبيت', close: 'إغلاق',
         ios: 'اضغط زر المشاركة ثم "إضافة إلى الشاشة الرئيسية"', iosApp: 'افتح الموقع في Safari لتثبيت التطبيق (⋯ ثم فتح في المتصفح)', upd: 'يوجد تحديث جديد', updBtn: 'تحديث',
         home: 'الرئيسية', shop: 'المنتجات', plan: 'المخطط', chat: 'واتساب', orders: 'طلباتي',
-        pushT: 'فعّل إشعارات العروض', pushGo: 'تفعيل', pushErr: 'تعذر تفعيل الإشعارات. حاول مرة أخرى.' }
+        pushT: 'فعّل إشعارات العروض', pushGo: 'تفعيل' }
     : { title: 'Install Vision Guard app', sub: 'Faster access and offer alerts', go: 'Install', close: 'Close',
         ios: 'Tap Share, then "Add to Home Screen"', iosApp: 'Open this page in Safari to install the app (\u22ef then Open in Browser)', upd: 'A new version is ready', updBtn: 'Update',
         home: 'Home', shop: 'Shop', plan: 'Planner', chat: 'WhatsApp', orders: 'Orders',
-        pushT: 'Get offer notifications', pushGo: 'Enable', pushErr: 'Could not enable notifications. Please try again.' };
+        pushT: 'Get offer notifications', pushGo: 'Enable' };
 
   var standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   if (standalone) document.documentElement.classList.add('vg-standalone');
 
   // 1) Service worker + update toast
+  var updateRequested = false;
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('/sw.js').then(function (reg) {
+        if (reg.waiting && navigator.serviceWorker.controller) showUpdate(reg.waiting);
         reg.addEventListener('updatefound', function () {
           var w = reg.installing;
           if (!w) return;
@@ -28,16 +30,18 @@
         });
       }).catch(function () {});
     });
-    var reloaded = false;
+    // Reload only after the user taps "Update" (never on first install, never mid-checkout).
+    var hadController = !!navigator.serviceWorker.controller;
     navigator.serviceWorker.addEventListener('controllerchange', function () {
-      if (reloaded) return; reloaded = true; location.reload();
+      if (!hadController) { hadController = true; return; }
+      if (updateRequested) location.reload();
     });
   }
   function showUpdate(worker) {
     var el = document.createElement('div');
     el.id = 'vg-update'; el.className = 'show'; el.setAttribute('role', 'status');
     el.innerHTML = '<span style="flex:1">' + T.upd + '</span><button type="button">' + T.updBtn + '</button>';
-    el.querySelector('button').onclick = function () { worker.postMessage('SKIP_WAITING'); };
+    el.querySelector('button').onclick = function () { updateRequested = true; worker.postMessage('SKIP_WAITING'); };
     document.body.appendChild(el);
   }
 
@@ -84,7 +88,7 @@
   if (standalone && 'Notification' in window && 'PushManager' in window && Notification.permission === 'default') {
     setTimeout(function () {
       banner(T.pushT, T.pushGo, function (el) {
-        window.vgEnablePush().then(function (ok) { if (ok) { el.remove(); lsSet('vg-push-dismissed', 30); } else { var t = el.querySelector('.t'); if (t) t.textContent = T.pushErr; } });
+        window.vgEnablePush().then(function () { el.remove(); lsSet('vg-push-dismissed', 30); });
       }, 'vg-push-dismissed', 30);
     }, 20000);
   }
@@ -96,8 +100,8 @@
   function ic(d) { return '<svg viewBox="0 0 24 24" aria-hidden="true">' + d + '</svg>'; }
   var items = [
     ['/', T.home, ic('<path d="M3 11l9-8 9 8M5 10v10h14V10"/>'), path === '/'],
-    ['/c/wifi-cameras', T.shop, ic('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'), path.indexOf('/c/') === 0],
-    ['/#planner', T.plan, ic('<path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15"/>'), false],
+    ['/shop', T.shop, ic('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'), path.indexOf('/shop') === 0 || path.indexOf('/c/') === 0 || path.indexOf('/p/') === 0],
+    ['/planner', T.plan, ic('<path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15"/>'), path.indexOf('/planner') === 0],
     ['https://wa.me/201105006854', T.chat, ic('<path d="M21 12a9 9 0 1 1-4-7.5L21 3l-1.5 4A9 9 0 0 1 21 12z"/>'), false],
     ['/order-status.php', T.orders, ic('<path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/>'), path.indexOf('/order-status') === 0]
   ];
@@ -108,6 +112,15 @@
   if (document.readyState !== 'loading') document.body.appendChild(nav);
 
   // 4) Push subscribe. Called from a user tap. Fetches the public VAPID key from the server.
+  // Re-register silently if permission was granted but the subscription was lost.
+  if (standalone && 'Notification' in window && 'PushManager' in window && Notification.permission === 'granted') {
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); })
+          .then(function (s) { if (!s) window.vgEnablePush(); }).catch(function () {});
+      }, 5000);
+    });
+  }
   window.vgEnablePush = function () {
     if (!('PushManager' in window) || !('serviceWorker' in navigator)) return Promise.resolve(false);
     return fetch('/push-key.php').then(function (r) { return r.json(); }).then(function (j) {
@@ -121,8 +134,14 @@
           return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
         }).then(function (sub) {
           return fetch('/push-subscribe.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sub) });
-        }).then(function (r) { if (!r.ok) return false; return r.json().then(function (j) { return !!(j && j.ok); }); });
+        }).then(function (r) { return !!(r && r.ok); });
       });
     }).catch(function () { return false; });
   };
+
+  // 5) Optional Gemini features (hidden until the API key is configured on the server)
+  window.addEventListener('load', function () {
+    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = '/chat.css'; document.head.appendChild(l);
+    ['/chat.js', '/plan-ai.js'].forEach(function (src) { var s = document.createElement('script'); s.src = src; s.async = true; document.body.appendChild(s); });
+  });
 })();

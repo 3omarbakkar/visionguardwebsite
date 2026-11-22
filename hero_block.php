@@ -23,7 +23,7 @@ $vg_n = count($vg_slides);
 .vg-dots{position:absolute;bottom:2px;right:18px;left:auto;z-index:5;display:flex;gap:0;justify-content:flex-end}
 .vg-dots button{width:24px;height:24px;padding:0;border:0;background:none;position:relative;cursor:pointer}.vg-dots button::before{content:"";position:absolute;top:50%;left:50%;width:8px;height:8px;border-radius:50%;background:rgba(31,49,84,.35);transform:translate(-50%,-50%);transition:all .25s}
 .vg-dots button.on::before{width:22px;border-radius:5px;background:#0667a5}
-@media (max-width:600px){.vg-hero{margin:8px 8px;border-radius:14px}.vg-nav{width:32px;height:32px;padding:0;font-size:18px;opacity:.85}.vg-prev{inset-inline-start:2px}.vg-next{inset-inline-end:2px}}
+@media (max-width:600px){.vg-hero{margin:8px 8px;border-radius:14px}.vg-nav{width:32px;height:32px;padding:0;font-size:18px;opacity:.85}.vg-prev{inset-inline-start:2px}.vg-next{inset-inline-end:2px}.vg-nav{display:none}}
 @media (prefers-reduced-motion:reduce){.vg-slide{transition:none}}
 .vg-slide .vg-d{display:none}
 html[data-theme=dark] .vg-hero{background:transparent;border-radius:0}

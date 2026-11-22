@@ -24,8 +24,8 @@ $avg = ($allt['c'] ?? 0) > 0 ? ($allt['s'] / $allt['c']) : 0;
 $pending = vgd_one("SELECT COUNT(*) c FROM leads WHERE type = 'order' AND status = 'new'");
 $byStatus = [];
 foreach (vgd_all("SELECT status, COUNT(*) c FROM leads WHERE type = 'order' GROUP BY status") as $r) { $byStatus[$r['status']] = (int)$r['c']; }
-$low = vgd_one("SELECT COUNT(*) c FROM products WHERE stock_qty IS NOT NULL AND stock_qty <= 3");
-$lowList = vgd_all("SELECT id, name_ar, stock_qty FROM products WHERE stock_qty IS NOT NULL AND stock_qty <= 3 ORDER BY stock_qty ASC LIMIT 8");
+$low = vgd_one("SELECT COUNT(*) c FROM products WHERE in_stock = 1 AND stock_qty IS NOT NULL AND stock_qty <= 3");
+$lowList = vgd_all("SELECT id, name_ar, stock_qty FROM products WHERE in_stock = 1 AND stock_qty IS NOT NULL AND stock_qty <= 3 ORDER BY stock_qty ASC LIMIT 8");
 $cust = vgd_one("SELECT COUNT(*) c FROM customers");
 
 $days = [];
@@ -40,10 +40,7 @@ for ($i = 6; $i >= 0; $i--) {
     $weekTotal += $s;
     if ($s > $max) $max = $s;
 }
-$top = vgd_all("SELECT p.id, p.name_ar, SUM(r.qty) q, SUM(r.qty * p.price) v
-    FROM vg_stock_reservations r JOIN products p ON p.id = r.product_id
-    WHERE r.released_at IS NULL AND r.created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-    GROUP BY p.id, p.name_ar ORDER BY q DESC LIMIT 8");
+$topAgg = []; foreach (vgd_all("SELECT cart_json FROM leads WHERE $ok AND created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)") as $tr) { $tIt = json_decode((string)$tr['cart_json'], true); if (!is_array($tIt)) continue; foreach ($tIt as $ti) { $tn = trim((string)($ti['name'] ?? '')); if ($tn === '') continue; $tq = (int)($ti['qty'] ?? 1); if (!isset($topAgg[$tn])) $topAgg[$tn] = ['name_ar' => $tn, 'q' => 0, 'v' => 0]; $topAgg[$tn]['q'] += $tq; $topAgg[$tn]['v'] += (float)($ti['price'] ?? 0) * $tq; } } uasort($topAgg, function ($a, $b) { return $b['q'] <=> $a['q']; }); $top = array_slice(array_values($topAgg), 0, 8);
 $recent = vgd_all("SELECT id, name, phone, total, status, created_at FROM leads WHERE type = 'order' ORDER BY created_at DESC LIMIT 8");
 
 $labels = ['new' => 'جديد', 'contacted' => 'تم التواصل', 'delivered' => 'تم التوصيل', 'closed' => 'مغلق', 'cancelled' => 'ملغي'];
@@ -51,21 +48,6 @@ $page_title = 'لوحة التقارير';
 $active = 'reports';
 require __DIR__ . '/includes/layout_top.php';
 ?>
-<style id="vg-unslop">
-.kpis{gap:16px;margin-bottom:24px}
-.kpis .kpi{border-radius:12px;padding:20px !important;box-shadow:0 1px 2px rgba(15,27,45,.05) !important;border:1px solid #e6ecf3 !important}
-.kpis .kpi::after{display:none !important}
-.kpis .kpi.hero{background:#0667a5 !important;border-color:transparent !important}
-.kpis .kchip{background:#eef3f9 !important;color:#51607a !important;border-radius:10px}
-.kpis .kpi.hero .kchip{background:rgba(255,255,255,.16) !important;color:#fff !important}
-.kpis .kpi.on .kchip{background:#fdecec !important;color:#b91c1c !important}
-.kpis .kpi.on .kchip svg,.kpis .kchip svg{color:inherit;stroke:currentColor}
-.kpis .kval{font-weight:600 !important;font-variant-numeric:tabular-nums;letter-spacing:0}
-.kpis .kpi small{font-weight:500 !important}
-.kpis .kpi-label{font-weight:500 !important}
-.card table th,.vg-box table th{font-weight:600 !important}
-.oc{border-radius:12px}
-</style>
 <?php
 $nToday = (int)($today['c'] ?? 0);
 $nMonth = (int)($month['c'] ?? 0);
@@ -139,7 +121,7 @@ $nNew = (int)($pending['c'] ?? 0);
   <a class="kpi card t-green" href="leads.php?status=delivered">
     <div class="kpi-top"><span class="kpi-label">طلبات تم توصيلها</span><span class="kchip green"><?= vgd_ic($P['truck']) ?></span></div>
     <div class="kval"><?= (int)($byStatus['delivered'] ?? 0) ?></div>
-    <div class="ksub">إجمالي الطلبات المتوصّلة</div>
+    <div class="ksub">إجمالي الطلبات الموصّلة</div>
   </a>
   <a class="kpi card <?= $nLow ? 'on-alert t-red' : 't-amber' ?>" href="inventory.php?f=low">
     <div class="kpi-top"><span class="kpi-label">مخزون منخفض</span><span class="kchip <?= $nLow ? 'red' : 'amber' ?>"><?= vgd_ic($P['alert']) ?></span></div>
@@ -165,7 +147,7 @@ $nNew = (int)($pending['c'] ?? 0);
         <div class="bar <?= $s[1] > 0 ? '' : 'zero' ?>" title="<?= vgd_h($s[0]) ?>: <?= number_format($s[1], 0) ?> ج.م (<?= $s[2] ?> طلب)">
           <span><?= $s[1] > 0 ? number_format($s[1], 0) : '' ?></span>
           <i style="height:<?= max(3, round($s[1] / $max * 100)) ?>%"></i>
-          <span><?= vgd_h(substr($s[0], 5)) ?></span>
+          <span><?= vgd_h(date('d/m', strtotime($s[0]))) ?></span>
         </div>
       <?php endforeach; ?>
     </div>
@@ -181,7 +163,7 @@ $nNew = (int)($pending['c'] ?? 0);
     <?php if ($top): ?>
     <table><thead><tr><th>المنتج</th><th>الكمية</th><th>القيمة</th></tr></thead><tbody>
       <?php foreach ($top as $t): ?>
-        <tr><td><?= vgd_h($t['name_ar']) ?></td><td><?= (int)$t['q'] ?></td><td><?= number_format((float)$t['v'], 0) ?> ج.م</td></tr>
+        <tr><td><?= vgd_h($t['name_ar']) ?></td><td><?= (int)$t['q'] ?></td><td><?= $t['v'] > 0 ? number_format((float)$t['v'], 0) . ' ج.م' : '—' ?></td></tr>
       <?php endforeach; ?>
     </tbody></table>
     <?php else: ?>
@@ -190,7 +172,7 @@ $nNew = (int)($pending['c'] ?? 0);
   </div>
   <div class="card tw">
     <div class="ch"><h3>تنبيهات المخزون</h3><a class="btn sm secondary" href="inventory.php">فتح المخزون</a></div>
-    <?php if ($lowList): ?>
+    <?php if ($lowList): ?><div style="font-size:12.5px;color:var(--muted);margin-bottom:6px">عرض <?= count($lowList) ?> من <?= $nLow ?> منتج</div>
       <?php foreach ($lowList as $p): ?>
         <div class="srow"><span><?= vgd_h($p['name_ar']) ?></span><span class="badge <?= (int)$p['stock_qty'] <= 0 ? 'cancelled' : 'contacted' ?>"><?= (int)$p['stock_qty'] <= 0 ? 'نفد' : (int)$p['stock_qty'] . ' متبقي' ?></span></div>
       <?php endforeach; ?>
@@ -208,7 +190,7 @@ $nNew = (int)($pending['c'] ?? 0);
         <td><?= vgd_h($r['name']) ?></td>
         <td><?= number_format((float)$r['total'], 0) ?> ج.م</td>
         <td><span class="badge <?= vgd_h($r['status']) ?>"><?= vgd_h($labels[$r['status']] ?? $r['status']) ?></span></td>
-        <td><?= vgd_h($r['created_at']) ?></td>
+        <td><?= vgd_h(date('d/m/Y H:i', strtotime($r['created_at']))) ?></td>
       </tr>
     <?php endforeach; ?>
     <?php if (!$recent): ?><tr><td colspan="5" style="color:var(--muted)">لسه مفيش طلبات. أول طلب هيظهر هنا تلقائياً.</td></tr><?php endif; ?>

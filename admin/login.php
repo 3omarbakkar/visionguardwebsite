@@ -1,4 +1,4 @@
-<?php
+<?php require_once __DIR__ . '/includes/ratelimit.php';
 require_once __DIR__ . '/includes/auth.php';
 
 $error = '';

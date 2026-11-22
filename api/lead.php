@@ -110,7 +110,7 @@ if($type==='order'){
         $stmt=$pdo->prepare('INSERT INTO leads (type,name,phone,email,message,cart_json,total,source_url,customer_id,payment_method,payment_status,traffic_src) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)');
         $stmt->execute([$type,$name,$phone,$email,$message,$cart,$total,mb_substr((string)($data['source']??($_SERVER['HTTP_REFERER']??'')),0,255),$cust?(int)$cust['id']:null,$paymentMethod,$paymentStatus,$trafficSrc]);
         $leadId=(int)$pdo->lastInsertId();
-        vg_stock_reserve($pdo,$leadId,$quantities);
+        /* stock is deducted when the order is confirmed (admin/lead_update.php) */
         $pdo->commit();
     } catch (VgLeadReject $e) {
         if($pdo->inTransaction()) $pdo->rollBack();

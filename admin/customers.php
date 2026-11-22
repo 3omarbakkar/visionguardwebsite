@@ -49,13 +49,28 @@ if ($id > 0) {
 </div>
 <div class="card">
   <p><b>الموبايل:</b> <span dir="ltr"><?= htmlspecialchars($cust['phone']) ?></span>
-     &nbsp; <a class="btn sm" target="_blank" rel="noopener" href="<?= htmlspecialchars(wa_link($cust['phone'])) ?>">واتساب</a></p>
+     &nbsp; <?php if ($cust['phone'] !== ''): ?><a class="btn sm" target="_blank" rel="noopener" href="<?= htmlspecialchars(wa_link($cust['phone'])) ?>">واتساب</a><?php endif; ?></p>
   <p class="muted">سجّل في: <?= htmlspecialchars($cust['created_at']) ?> &nbsp;|&nbsp; آخر دخول: <?= htmlspecialchars($cust['last_login'] ?: '—') ?></p>
   <p><b>عدد الطلبات:</b> <?= count($orders) ?> &nbsp;|&nbsp; <b>إجمالي المشتريات:</b> <?= number_format($sum) ?> ج.م</p>
 </div>
+<?php if (can('customers_manage')): ?>
+<div class="card">
+<h3 style="margin-top:0">إدارة العميل</h3>
+<form method="post" action="customer_update.php" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+<?= csrf_field() ?><input type="hidden" name="id" value="<?= (int)$cust['id'] ?>"><input type="hidden" name="action" value="update">
+<label style="display:flex;flex-direction:column;gap:4px;font-size:13px">الاسم<input name="name" value="<?= htmlspecialchars($cust['name']) ?>" maxlength="120" required></label>
+<label style="display:flex;flex-direction:column;gap:4px;font-size:13px">الموبايل<input name="phone" dir="ltr" value="<?= htmlspecialchars($cust['phone']) ?>" maxlength="20"></label>
+<button class="btn sm" type="submit">حفظ التعديل</button>
+</form>
+<form method="post" action="customer_update.php" style="margin-top:14px" onsubmit="return confirm('حذف حساب العميل ده؟ طلباته هتفضل محفوظة بدون حساب.');">
+<?= csrf_field() ?><input type="hidden" name="id" value="<?= (int)$cust['id'] ?>"><input type="hidden" name="action" value="delete">
+<button class="btn sm danger" type="submit">حذف الحساب</button>
+</form>
+</div>
+<?php endif; ?>
 <div class="card">
 <table>
-  <tr><th>التاريخ</th><th>التفاصيل</th><th>الإجمالي</th><th>الحالة</th></tr>
+<tr><th>التاريخ</th><th>التفاصيل</th><th>الإجمالي</th><th>الحالة</th></tr>
   <?php foreach ($orders as $o): ?>
   <tr>
     <td class="muted"><?= htmlspecialchars($o['created_at']) ?></td>
@@ -110,7 +125,7 @@ $rows = $s->fetchAll(); if (!can('customer_contact')) { foreach ($rows as &$vgr)
     <td><?= number_format((float)$r['total']) ?> ج.م</td>
     <td class="muted"><?= htmlspecialchars($r['created_at']) ?></td>
     <td class="muted"><?= htmlspecialchars($r['last_login'] ?: '—') ?></td>
-    <td><a class="btn sm secondary" target="_blank" rel="noopener" href="<?= htmlspecialchars(wa_link($r['phone'])) ?>">واتساب</a></td>
+    <td><?php if ($r['phone'] !== ''): ?><a class="btn sm secondary" target="_blank" rel="noopener" href="<?= htmlspecialchars(wa_link($r['phone'])) ?>">واتساب</a><?php endif; ?></td>
   </tr>
   <?php endforeach; ?>
   <?php if (!$rows): ?><tr><td colspan="7" class="muted">لا يوجد عملاء<?= $q !== '' ? ' مطابقين للبحث' : ' بعد' ?>.</td></tr><?php endif; ?>

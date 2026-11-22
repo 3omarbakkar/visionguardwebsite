@@ -34,6 +34,11 @@ $st = (string)($o['status'] ?? 'new');
 .badge.new{background:#dbeafe;color:#1e40af}.badge.contacted{background:#fef3c7;color:#92400e}
 .badge.delivered{background:#dcfce7;color:#166534}.badge.closed{background:#e0e7ff;color:#3730a3}.badge.cancelled{background:#fee2e2;color:#991b1b}
 .tw{overflow-x:auto}
+.num{text-align:left !important;white-space:nowrap;font-variant-numeric:tabular-nums}
+.vgit{display:inline-flex;align-items:center;gap:10px}
+.vgit img{width:44px;height:44px;flex:0 0 44px;object-fit:cover;border-radius:8px;border:1px solid #e1e8f1;background:#f5f7fa}
+tfoot td{font-weight:700;border-top:2px solid #e1e8f1;background:#f8fafc}
+.kvbox{margin-top:18px;padding-top:6px;border-top:1px solid #e1e8f1}
 @media print{
   nav.side,.topbar .actions,.noprint,.flash{display:none !important}
   body{background:#fff} main{padding:0;max-width:none}
@@ -56,7 +61,9 @@ $st = (string)($o['status'] ?? 'new');
         <?php if ($wa !== ''): ?><a class="btn sm secondary noprint" target="_blank" rel="noopener" href="https://wa.me/20<?= vgo_h($wa) ?>">واتساب</a><?php endif; ?></dd>
       <?php if (!empty($o['email'])): ?><dt>الإيميل</dt><dd><?= vgo_h($o['email']) ?></dd><?php endif; ?>
       <dt>تاريخ الطلب</dt><dd><?= vgo_h($o['created_at']) ?></dd>
-      <dt>نوع الطلب</dt><dd><?= vgo_h($o['type']) ?></dd>
+      <dt>نوع الطلب</dt><dd><?= vgo_h(['order' => 'طلب شراء', 'contact' => 'رسالة تواصل', 'quote' => 'طلب عرض سعر'][$o['type']] ?? $o['type']) ?></dd>
+      <?php $vgLc = null; if (!empty($o['customer_id'])) { $vgq = db()->prepare('SELECT id, name, phone FROM customers WHERE id = ?'); $vgq->execute([(int)$o['customer_id']]); $vgLc = $vgq->fetch(); } ?>
+      <dt>حساب العميل</dt><dd><?php if ($vgLc): ?><a href="customers.php?id=<?= (int)$vgLc['id'] ?>"><?= vgo_h($vgLc['name']) ?></a><?php else: ?><span style="color:var(--muted);font-weight:400">غير مرتبط بحساب</span><?php endif; ?></dd>
     </dl>
   </div>
   <div class="card">
@@ -72,16 +79,28 @@ $st = (string)($o['status'] ?? 'new');
   <h3 style="margin-top:0">المنتجات</h3>
   <?php if ($items): ?>
   <table>
-    <thead><tr><th>المنتج</th><th>الكمية</th><th>السعر</th></tr></thead>
+    <thead><tr><th>المنتج</th><th class="num">سعر الوحدة</th><th class="num">الكمية</th><th class="num">الإجمالي</th></tr></thead>
     <tbody>
-    <?php foreach ($items as $it): ?>
+    <?php $vgSum = 0.0; $vgPm = [];
+    try { foreach (db()->query('SELECT id, name_ar, price, discount_percent FROM products')->fetchAll() as $vgP) { $vgPm[trim((string)$vgP['name_ar'])] = $vgP; } } catch (Throwable $e) {}
+    foreach ($items as $it):
+      $vgQ = max(1, (int)($it['qty'] ?? 1));
+      $vgU = $it['unit_price'] ?? ($it['price'] ?? null);
+      $vgPid = (int)($it['id'] ?? 0);
+      $vgPr = $vgPm[trim((string)($it['name'] ?? ''))] ?? null;
+      if ($vgPid <= 0 && $vgPr) $vgPid = (int)$vgPr['id'];
+      if ($vgU === null && count($items) === 1 && $o['total'] !== null) $vgU = (float)$o['total'] / $vgQ;
+      $vgLn = $it['line_total'] ?? ($vgU !== null ? (float)$vgU * $vgQ : null);
+      if ($vgLn !== null) $vgSum += (float)$vgLn; ?>
       <tr>
-        <td><?= vgo_h($it['name'] ?? '') ?></td>
-        <td><?= (int)($it['qty'] ?? 1) ?></td>
-        <td><?= isset($it['price']) ? number_format((float)$it['price'], 0) . ' ج.م' : '—' ?></td>
+        <td><span class="vgit"><?php if ($vgPid > 0 && file_exists(__DIR__ . '/../images/p' . $vgPid . '.jpg')): ?><img src="/images/p<?= $vgPid ?>.jpg" alt="" loading="lazy"><?php endif; ?><span><?= vgo_h($it['name'] ?? '') ?></span></span></td>
+        <td class="num"><?= $vgU !== null ? number_format((float)$vgU, 0) . ' ج.م' : '—' ?></td>
+        <td class="num"><?= $vgQ ?></td>
+        <td class="num"><strong><?= $vgLn !== null ? number_format((float)$vgLn, 0) . ' ج.م' : '—' ?></strong></td>
       </tr>
     <?php endforeach; ?>
     </tbody>
+    <tfoot><tr><td colspan="3">إجمالي الطلب</td><td class="num"><?= number_format((float)($o['total'] ?? $vgSum), 0) ?> ج.م</td></tr></tfoot>
   </table>
   <?php else: ?><p style="color:var(--muted)">مفيش تفاصيل منتجات متسجلة للطلب ده.</p><?php endif; ?>
   <?php if (!empty($o['message'])): ?>
@@ -125,5 +144,25 @@ $st = (string)($o['status'] ?? 'new');
     <?php if (!$techs): ?><span style="color:var(--muted);font-size:13px">لسه مفيش فنيين. غيّر دور موظف لـ "فني / تركيب" من صفحة الموظفين.</span><?php endif; ?>
   </form>
   <?php endif; ?>
+  <?php if (can('customers_manage')):
+    $vgCs = db()->query('SELECT id, name, phone FROM customers ORDER BY name ASC')->fetchAll();
+    $vgT = substr(preg_replace('/\D/', '', (string)$phone), -10);
+  ?>
+  <form method="post" action="order_link.php" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px">
+    <?= csrf_field() ?>
+    <input type="hidden" name="id" value="<?= (int)$o['id'] ?>">
+    <label>حساب العميل
+      <select name="customer_id">
+        <option value="0">بدون حساب</option>
+        <?php foreach ($vgCs as $vgC): $vgSame = ($vgT !== '' && substr(preg_replace('/\D/', '', (string)$vgC['phone']), -10) === $vgT); ?>
+          <option value="<?= (int)$vgC['id'] ?>" <?= (int)($o['customer_id'] ?? 0) === (int)$vgC['id'] ? 'selected' : '' ?>><?= vgo_h($vgC['name']) ?> - <?= vgo_h($vgC['phone']) ?><?= $vgSame ? ' (نفس رقم الطلب)' : '' ?></option>
+        <?php endforeach; ?>
+      </select>
+    </label>
+    <button class="btn sm" type="submit">حفظ الربط</button>
+    <span style="color:var(--muted);font-size:13px">الطلب المرتبط بيظهر للعميل في حسابه على الموقع.</span>
+  </form>
+  <?php endif; ?>
 </div>
+<script>if(/[?&]print=1\b/.test(location.search)){window.addEventListener('load',function(){setTimeout(function(){window.print()},500)})}</script>
 <?php require __DIR__ . '/includes/layout_bottom.php'; ?>

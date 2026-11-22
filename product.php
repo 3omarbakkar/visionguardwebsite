@@ -36,7 +36,7 @@ if (!$product && $id) {
 $CAT_NAMES = [
 	'cat_hd' => 'كاميرات سلكية HD', 'cat_ip' => 'كاميرات IP', 'cat_wf' => 'كاميرات واي فاي', 'cat_dvr' => 'مسجلات DVR',
 	'cat_hdd' => 'هارد ديسك', 'cat_mem' => 'كروت الميموري', 'cat_psu' => 'باور سبلاي', 'cat_cab' => 'الكابلات',
-	'cat_rack' => 'الراكات', 'cat_acc' => 'ملحقات',
+	'cat_rack' => 'الراكات', 'cat_acc' => 'ملحقات', 'cat_net' => 'شبكات', 'cat_att' => 'أجهزة حضور وانصراف',
 ];
 $PLACE_NAMES = ['in' => 'داخلية', 'out' => 'خارجية', 'both' => 'داخلية وخارجية'];
 $DESC_MAP = [
@@ -223,12 +223,12 @@ $metaDesc = mb_substr(strip_tags($details), 0, 160);
 <title><?= h($name_ar) ?> | Vision Guard</title>
 <meta name="description" content="<?= h($metaDesc) ?>">
 <link rel="canonical" href="<?= h($pageUrl) ?>">
-<meta name="theme-color" content="#202020">
+<meta name="theme-color" content="#0667a5">
 <meta property="og:type" content="product"><meta property="og:url" content="<?= h($pageUrl) ?>"><meta property="og:site_name" content="Vision Guard">
 <meta property="og:title" content="<?= h($name_ar) ?> | Vision Guard"><meta property="og:description" content="<?= h($metaDesc) ?>">
 <?php if ($hasImage): ?><meta property="og:image" content="https://visionguardeg.com/<?= h($imgRel) ?>"><?php endif; ?>
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<script type="application/ld+json"><?php echo json_encode(['@context'=>'https://schema.org','@type'=>'Product','name'=>$name_ar,'description'=>mb_substr(trim(preg_replace('/\s+/u',' ',strip_tags($details))),0,500),'sku'=>(string)(!empty($product['slug'])?$product['slug']:$product['id']),'mpn'=>(string)(!empty($product['slug'])?$product['slug']:$product['id']),'image'=>($hasImage?('https://visionguardeg.com/'.ltrim($imgRel,'/')):null),'brand'=>['@type'=>'Brand','name'=>(string)($product['brand']??'Vision Guard')],'offers'=>['@type'=>'Offer','url'=>$pageUrl,'priceCurrency'=>'EGP','price'=>(string)$effPrice,'availability'=>($inStock?'https://schema.org/InStock':'https://schema.org/OutOfStock'),'priceValidUntil'=>date('Y').'-12-31','itemCondition'=>'https://schema.org/NewCondition','seller'=>['@type'=>'Organization','name'=>'Vision Guard'],'shippingDetails'=>['@type'=>'OfferShippingDetails','shippingDestination'=>['@type'=>'DefinedRegion','addressCountry'=>'EG','addressRegion'=>['Cairo','Giza']]]]], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT); ?></script><script type="application/ld+json"><?php echo json_encode(['@context'=>'https://schema.org','@type'=>'BreadcrumbList','itemListElement'=>[['@type'=>'ListItem','position'=>1,'name'=>'الرئيسية','item'=>'https://visionguardeg.com/'],['@type'=>'ListItem','position'=>2,'name'=>$name_ar,'item'=>$pageUrl]]], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT); ?></script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400..800&family=Inter:wght@400..600&family=Sometype+Mono:wght@400..500&display=swap">
+<script type="application/ld+json"><?php echo json_encode(['@context'=>'https://schema.org','@type'=>'Product','name'=>$name_ar,'description'=>mb_substr(trim(preg_replace('/\s+/u',' ',strip_tags($details))),0,500),'sku'=>(string)(!empty($product['slug'])?$product['slug']:$product['id']),'mpn'=>(string)(!empty($product['slug'])?$product['slug']:$product['id']),'image'=>($hasImage?('https://visionguardeg.com/'.ltrim($imgRel,'/')):null),'brand'=>['@type'=>'Brand','name'=>(string)($product['brand']??'Vision Guard')],'offers'=>['@type'=>'Offer','url'=>$pageUrl,'priceCurrency'=>'EGP','price'=>(string)$effPrice,'availability'=>($inStock?'https://schema.org/InStock':'https://schema.org/OutOfStock'),'priceValidUntil'=>date('Y').'-12-31','itemCondition'=>'https://schema.org/NewCondition','seller'=>['@type'=>'Organization','name'=>'Vision Guard'],'shippingDetails'=>['@type'=>'OfferShippingDetails','shippingDestination'=>['@type'=>'DefinedRegion','addressCountry'=>'EG','addressRegion'=>['Cairo','Giza']]]]], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT); ?></script><script type="application/ld+json"><?php echo json_encode(['@context'=>'https://schema.org','@type'=>'BreadcrumbList','itemListElement'=>[['@type'=>'ListItem','position'=>1,'name'=>'الرئيسية','item'=>'https://visionguardeg.com/'],['@type'=>'ListItem','position'=>2,'name'=>$name_ar,'item'=>$pageUrl]]], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT); ?></script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap">
 <style>
 :root{--brand:#0667a5;--on-brand:#fff;--accent:#05b3e9;--on-accent:#04202e;--sale:#ff5a1f;--bg:#f4f7fb;--surface:#fff;--text:#202224;--muted:#494b4a;--border:#e1e1e1}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--brand:#052e45;--accent:#05b3e9;--on-accent:#04202e;--bg:#2e4160;--surface:#3d5279;--text:#ffffff;--muted:#cdd6e4;--border:#5d7399}}
@@ -290,7 +290,6 @@ footer a{display:inline-block;margin:0 8px;opacity:.9}
 <meta name="apple-mobile-web-app-title" content="Vision Guard">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="stylesheet" href="/pwa.css">
-<link rel="stylesheet" href="/vg-design.css?v=<?php echo (int)@filemtime(__DIR__ . '/vg-design.css'); ?>">
 </head>
 <body>
 <div class="top">توصيل داخل القاهرة والجيزة · ضمان رسمي · اطلب عبر واتساب</div>

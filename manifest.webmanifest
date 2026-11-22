@@ -6,11 +6,10 @@
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait",
   "lang": "ar",
   "dir": "rtl",
   "background_color": "#1f3154",
-  "theme_color": "#202020",
+  "theme_color": "#0667a5",
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -68,7 +67,7 @@
     {
       "name": "مخطط التغطية",
       "short_name": "المخطط",
-      "url": "/#planner",
+      "url": "/planner?source=shortcut",
       "icons": [
         {
           "src": "/icons/icon-192.png",

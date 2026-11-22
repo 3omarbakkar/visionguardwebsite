@@ -1,4 +1,4 @@
-<?php
+<?php require_once __DIR__ . '/includes/ratelimit.php';
 require_once __DIR__ . '/includes/perms.php';
 
 $cur = current_admin();
@@ -42,8 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?><!doctype html>
 <html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8">
+<head><meta charset="utf-8">
+
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>دخول الموظفين · Vision Guard</title>
 <meta name="robots" content="noindex,nofollow">
@@ -65,8 +65,7 @@ button:hover{background:var(--brand-dark)}
 .foot{margin-top:16px;text-align:center;font-size:13px;color:var(--muted)}
 .foot a{color:var(--brand)}
 </style>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400..800&display=swap">
-<link rel="stylesheet" href="vg-admin.css?v=<?= (int)@filemtime(__DIR__ . '/vg-admin.css') ?>">
+<script src="assets/i18n.js?v=20261120"></script>
 </head>
 <body>
 <form class="box" method="post" autocomplete="off">

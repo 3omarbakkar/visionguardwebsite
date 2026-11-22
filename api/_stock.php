@@ -118,3 +118,53 @@ function vg_stock_release_lead(int $leadId): void {
         error_log('Vision Guard stock release failed for lead ' . $leadId . ': ' . $e->getMessage());
     }
 }
+
+/**
+ * Deduct stock for an order when it is confirmed (status contacted / delivered).
+ * Idempotent: does nothing while the order still holds an active reservation.
+ * Returns ['deducted' => int, 'skipped' => string[]] (skipped = not enough units).
+ */
+function vg_stock_confirm_lead(int $leadId): array {
+    $res = ['deducted' => 0, 'skipped' => []];
+    $pdo = db();
+    try {
+        $pdo->beginTransaction();
+        $h = $pdo->prepare('SELECT COUNT(*) FROM vg_stock_reservations WHERE lead_id = ? AND released_at IS NULL');
+        $h->execute([$leadId]);
+        if ((int)$h->fetchColumn() > 0) { $pdo->commit(); return $res; }
+        $q = $pdo->prepare('SELECT cart_json FROM leads WHERE id = ? AND type = ? FOR UPDATE');
+        $q->execute([$leadId, 'order']);
+        $items = json_decode((string)$q->fetchColumn(), true);
+        $qty = [];
+        if (is_array($items)) {
+            foreach ($items as $it) {
+                if (is_array($it) && isset($it['id'], $it['qty'])) {
+                    $pid = (int)$it['id'];
+                    $qty[$pid] = ($qty[$pid] ?? 0) + (int)$it['qty'];
+                }
+            }
+        }
+        ksort($qty);
+        if ($qty) {
+            $marks = implode(',', array_fill(0, count($qty), '?'));
+            $p = $pdo->prepare("SELECT id, name_ar, stock_qty FROM products WHERE id IN ($marks) FOR UPDATE");
+            $p->execute(array_keys($qty));
+            $rows = [];
+            foreach ($p->fetchAll(PDO::FETCH_ASSOC) as $r) $rows[(int)$r['id']] = $r;
+            $ok = [];
+            foreach ($qty as $pid => $n) {
+                $r = $rows[$pid] ?? null;
+                if (!$r || $r['stock_qty'] === null) continue;
+                if ((int)$r['stock_qty'] < $n) { $res['skipped'][] = (string)$r['name_ar']; continue; }
+                $ok[$pid] = $n;
+            }
+            vg_stock_reserve($pdo, $leadId, $ok);
+            $res['deducted'] = count($ok);
+        }
+        $pdo->commit();
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
+        error_log('Vision Guard stock confirm failed for lead ' . $leadId . ': ' . $e->getMessage());
+    }
+    return $res;
+}

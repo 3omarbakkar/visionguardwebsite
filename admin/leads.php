@@ -82,8 +82,9 @@ require __DIR__ . '/includes/layout_top.php';
 <?php endforeach; ?>
 </div>
 <?php if (!$leads): ?>
-<div class="card"><p style="color:var(--muted);margin:0">مفيش طلبات في القسم ده.</p></div>
+<div class="card"><p style="color:var(--muted);margin:0"><?= $status === '' ? 'مفيش طلبات حالية. الطلبات المتسلّمة بتظهر في "عرض الكل".' : 'مفيش طلبات في القسم ده.' ?></p></div>
 <?php endif; ?>
+<style>.vgqs{display:inline-flex;margin:0}.vgqs select{padding:6px 10px;border-radius:10px;border:1px solid #e1e8f1;background:#fff;font:inherit;font-size:13px;color:#0f1b2d;cursor:pointer}</style>
 <?php foreach ($leads as $l):
     $st = (string)($l['status'] ?? 'new');
     $isOrder = ($l['type'] === 'order');
@@ -116,6 +117,8 @@ require __DIR__ . '/includes/layout_top.php';
     <div style="display:flex;gap:8px">
       <?php if ($canContact && $wa !== ''): ?><a class="btn sm secondary" target="_blank" rel="noopener" href="https://wa.me/20<?= vgl_h($wa) ?>">واتساب</a><?php endif; ?>
       <?php if ($isOrder): ?><a class="btn sm" href="order.php?id=<?= (int)$l['id'] ?>">التفاصيل والفاتورة</a><?php endif; ?>
+<?php if ($isOrder): ?><a class="btn sm secondary" target="_blank" rel="noopener" href="order.php?id=<?= (int)$l['id'] ?>&amp;print=1">طباعة</a><?php endif; ?>
+<?php if ($isOrder && can('leads_status')): ?><form method="post" action="lead_update.php" class="vgqs"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int)$l['id'] ?>"><select name="status" data-cur="<?= vgl_h($st) ?>" aria-label="تغيير الحالة" onchange="if(this.value!=='cancelled'||confirm('إلغاء الطلب هيرجّع المخزون المخصوم. متأكد؟')){this.form.submit()}else{this.value=this.dataset.cur}"><?php foreach ($statusLabels as $sk => $sv): ?><option value="<?= vgl_h($sk) ?>"<?= $sk === $st ? ' selected' : '' ?>><?= vgl_h($sv) ?></option><?php endforeach; ?></select></form><?php endif; ?>
     </div>
   </div>
   <?php if ($items || $lines): ?>

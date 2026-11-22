@@ -46,25 +46,6 @@ function vg_admin_login_succeeded(array $state): void {
 }
 
 function current_admin(): ?array {
-    if (empty($_SESSION['admin']['id'])) return null;
-    // Re-check the account once per request so a deactivated or demoted staff member loses
-    // access immediately instead of keeping the role stored in an old session.
-    static $checked = false;
-    if (!$checked) {
-        $checked = true;
-        try {
-            $s = db()->prepare('SELECT * FROM admin_users WHERE id = ? LIMIT 1');
-            $s->execute([(int)$_SESSION['admin']['id']]);
-            $row = $s->fetch();
-            if (!$row || (int)($row['active'] ?? 1) !== 1) {
-                unset($_SESSION['admin']);
-                return null;
-            }
-            if (isset($row['role']) && $row['role'] !== '') $_SESSION['admin']['role'] = (string)$row['role'];
-        } catch (Throwable $e) {
-            error_log('Vision Guard admin session re-check failed: ' . $e->getMessage());
-        }
-    }
     return $_SESSION['admin'] ?? null;
 }
 
