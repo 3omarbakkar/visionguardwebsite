@@ -2,6 +2,13 @@
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/images.php';
 
+// Admin pages are per-user and carry CSRF tokens: never let LiteSpeed/browsers/proxies cache them.
+if (!headers_sent()) {
+    header('Cache-Control: no-store, no-cache, must-revalidate, private');
+    header('Pragma: no-cache');
+    header('X-LiteSpeed-Cache-Control: no-cache, no-store');
+}
+
 if (session_status() === PHP_SESSION_NONE) {
     $https = (!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off')
         || ((int)($_SERVER['SERVER_PORT'] ?? 0) === 443);
