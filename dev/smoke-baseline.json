@@ -1,0 +1,197 @@
+{
+  "/": {
+    "status": 200,
+    "loc": "",
+    "hash": "9f3a17522d06"
+  },
+  "/shop": {
+    "status": 200,
+    "loc": "",
+    "hash": "adb1a96eea4f"
+  },
+  "/planner": {
+    "status": 200,
+    "loc": "",
+    "hash": "cb46b2f1d64d"
+  },
+  "/about": {
+    "status": 200,
+    "loc": "",
+    "hash": "0b4df8981d1f"
+  },
+  "/faq": {
+    "status": 200,
+    "loc": "",
+    "hash": "88ae88de3dbd"
+  },
+  "/contact": {
+    "status": 200,
+    "loc": "",
+    "hash": "6921249fa301"
+  },
+  "/cart": {
+    "status": 200,
+    "loc": "",
+    "hash": "d1e7fdf148ea"
+  },
+  "/account": {
+    "status": 200,
+    "loc": "",
+    "hash": "64f0df8c5827"
+  },
+  "/category.php?c=cameras": {
+    "status": 404,
+    "loc": "",
+    "hash": "17d4996832ba"
+  },
+  "/product.php?s=x": {
+    "status": 404,
+    "loc": "",
+    "hash": "669231a96002"
+  },
+  "/privacy.html": {
+    "status": 200,
+    "loc": "",
+    "hash": "7d85c2dbc226"
+  },
+  "/terms.html": {
+    "status": 200,
+    "loc": "",
+    "hash": "23cc5e0f2068"
+  },
+  "/shipping.html": {
+    "status": 200,
+    "loc": "",
+    "hash": "cf403d35c43f"
+  },
+  "/offline.html": {
+    "status": 200,
+    "loc": "",
+    "hash": "b9e80f317b43"
+  },
+  "/robots.txt": {
+    "status": 200,
+    "loc": "",
+    "hash": "7aa51111bb88"
+  },
+  "/sitemap.xml": {
+    "status": 200,
+    "loc": "",
+    "hash": "6da32391db2d"
+  },
+  "/llms.txt": {
+    "status": 200,
+    "loc": "",
+    "hash": "be6d46ff88f2"
+  },
+  "/manifest.webmanifest": {
+    "status": 200,
+    "loc": "",
+    "hash": "770b7cfe88b8"
+  },
+  "/meta-feed.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "c0d1a4b9392f"
+  },
+  "/push-key.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "ac32e3654911"
+  },
+  "/order-status.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "94eecead5a83"
+  },
+  "/admin/login.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "e0f0001d3374"
+  },
+  "/admin/staff_login.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "f672ec3dd0a9"
+  },
+  "/admin/dashboard.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "fa909d7a062b"
+  },
+  "/admin/index.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "557ebbc78984"
+  },
+  "/admin/products.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "5bc4bf8a8d6a"
+  },
+  "/admin/product_form.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "690dee7dbcb9"
+  },
+  "/admin/inventory.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "693d4315b5e7"
+  },
+  "/admin/leads.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "11601edcc5b2"
+  },
+  "/admin/customers.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "c3be58ecff01"
+  },
+  "/admin/staff.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "88008d47e137"
+  },
+  "/admin/staff_orders.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "8daf78d7452a"
+  },
+  "/admin/attendance.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "1545aa3d395f"
+  },
+  "/admin/insights.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "621365f1c994"
+  },
+  "/admin/hero.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "e9cdfe90f4fa"
+  },
+  "/admin/discounts.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "f1932f1c882c"
+  },
+  "/admin/settings.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "4173aae55f60"
+  },
+  "/admin/account.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "e8b3ba60a07f"
+  },
+  "/admin/notify.php": {
+    "status": 200,
+    "loc": "",
+    "hash": "490df03231f3"
+  }
+}

@@ -135,6 +135,3 @@ function vg_sms_send(string $phone, string $text): bool {
     return $ok;
 }
 
-function vg_sms_reset_text(string $code): string {
-    return 'Vision Guard: كود استعادة كلمة المرور ' . $code . '. صالح 10 دقائق. متشاركوش مع حد.';
-}

@@ -68,11 +68,6 @@ function require_perm($perm) {
     }
 }
 
-function role_label($r) {
-    $m = vg_roles();
-    return isset($m[$r]) ? $m[$r]['label'] : $r;
-}
-
 function role_home($r) {
     $m = vg_roles();
     return isset($m[$r]) ? $m[$r]['home'] : 'attendance.php';
