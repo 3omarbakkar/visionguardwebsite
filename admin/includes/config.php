@@ -1,19 +1,14 @@
 <?php
 // ============================================================
-// Vision Guard - configuration
-// Database credentials are NOT stored in this file (it is public).
-// Put them in admin/includes/config.local.php (gitignored, create it on the
-// server - see config.local.sample.php), or set the VG_DB_USER / VG_DB_PASS
-// environment variables.
+// Vision Guard - database configuration
+// Fill these in with the values you get from cPanel > MySQL
+// Databases (or the Database Wizard), then re-upload this file.
 // ============================================================
 
-if (is_file(__DIR__ . '/config.local.php')) {
-    require __DIR__ . '/config.local.php';
-}
-defined('DB_HOST') || define('DB_HOST', (string)(getenv('VG_DB_HOST') ?: 'localhost'));
-defined('DB_NAME') || define('DB_NAME', (string)(getenv('VG_DB_NAME') ?: 'visionguard2026_vg'));
-defined('DB_USER') || define('DB_USER', (string)(getenv('VG_DB_USER') ?: ''));
-defined('DB_PASS') || define('DB_PASS', (string)(getenv('VG_DB_PASS') ?: ''));
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'visionguard2026_vg');
+define('DB_USER', 'visionguard2026_vg');
+define('DB_PASS', 'wUNPHDTJTVi0oknwOKAGK*');
 
 // Base URL of the site (no trailing slash) - used for redirects/links
 define('SITE_URL', 'https://visionguardeg.com');
