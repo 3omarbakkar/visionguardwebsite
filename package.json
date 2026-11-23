@@ -4,7 +4,9 @@
   "description": "Local dev helpers for the Vision Guard PHP site",
   "scripts": {
     "dev": "node dev/server.js",
-    "dev:real": "node dev/server.js --real"
+    "dev:real": "node dev/server.js --real",
+    "lint": "node dev/lint.js",
+    "test": "node dev/lint.js && node dev/smoke.js"
   },
   "engines": { "node": ">=16.7" }
 }
