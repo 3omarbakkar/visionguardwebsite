@@ -1,6 +1,6 @@
 <?php
-// with Google, and signs in the matching admin. (A temporary password form exists on login.php, off unless the server enables it.)
-// with Google, and signs in the matching admin. Google-only: there is no password fallback.
+// Receives the Google Identity Services redirect (POST: credential + g_csrf_token), verifies the ID token
+// with Google, and signs in the matching admin. (login.php also has a temporary password form, off unless the server enables it.)
 require_once __DIR__ . '/includes/auth.php';
 
 const VG_GOOGLE_CLIENT_ID = '249338136868-dq98bt7kr5b5m552h69tgjeu2vj6u8ir.apps.googleusercontent.com';
