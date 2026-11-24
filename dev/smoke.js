@@ -20,10 +20,12 @@ const PUBLIC = ['/', '/shop', '/planner', '/about', '/faq', '/contact', '/cart',
 const ADMIN = ['dashboard', 'index', 'products', 'product_form', 'inventory', 'leads', 'customers',
   'staff', 'staff_orders', 'attendance', 'insights', 'hero', 'discounts', 'settings', 'account', 'notify'];
 // These need MySQL / a working OpenSSL config, so demo mode (SQLite) throws on them. They are still
-// baselined (any change in output is flagged) but their PHP error text is not treated as a failure.
+// baselined (any change in output is flagged) but their 500 / PHP error text is not treated as a failure.
 const DEMO_LIMITED = new Set(['/admin/attendance.php', '/admin/hero.php', '/admin/discounts.php', '/admin/notify.php']);
 
 const normalise = (s) => s
+  // Checkouts differ in line endings (git autocrlf), which would change every line of every page.
+  .replace(/\r/g, '')
   .replace(/name="csrf" value="[0-9a-f]+"/g, 'name="csrf" value="X"')
   .replace(/name=&quot;csrf&quot; value=&quot;[0-9a-f]+&quot;/g, 'name=&quot;csrf&quot; value=&quot;X&quot;')
   .replace(/\b\d\d\/\d\d\/20\d\d \d\d:\d\d(:\d\d)?/g, 'TS')
@@ -32,7 +34,9 @@ const normalise = (s) => s
   .replace(/\b\d{10,13}\b/g, 'N')
   // admin/index.php greets by time of day, so the baseline would flip at noon every day.
   .replace(/صباح الخير|مساء الخير/g, 'GREET')
-  .replace(/[A-Za-z]:[\\/][^\s<'"]*?\.dev-site/g, 'ROOT')
+  // The checkout path can contain spaces ("D:/Vision Guard/..."), so only stop at markup, quotes and
+  // line breaks. PHP error text embeds this path, which made the baseline checkout-specific.
+  .replace(/(?<![A-Za-z0-9])[A-Za-z]:[\\/][^<'"\n]*?\.dev-site/g, 'ROOT')
   .replace(/\\/g, '/')
   .replace(/nonce="[^"]*"/g, 'nonce="X"');
 const sha = (s) => crypto.createHash('sha1').update(s).digest('hex').slice(0, 12);
@@ -63,7 +67,7 @@ async function get(url, cookie) {
   const problems = [];
   const record = (name, r) => {
     results[name] = { status: r.status, loc: r.loc, hash: sha(normalise(r.body)) };
-    if (r.status >= 500) problems.push(`${name}: HTTP ${r.status}`);
+    if (r.status >= 500 && !DEMO_LIMITED.has(name)) problems.push(`${name}: HTTP ${r.status}`);
     if (!DEMO_LIMITED.has(name) && /(Fatal error|Parse error|Uncaught |Warning: |Notice: |Deprecated: )/.test(r.body)) problems.push(`${name}: PHP error text in output`);
   };
 

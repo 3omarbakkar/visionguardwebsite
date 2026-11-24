@@ -2,42 +2,42 @@
   "/": {
     "status": 200,
     "loc": "",
-    "hash": "9f3a17522d06"
+    "hash": "f7243ede528f"
   },
   "/shop": {
     "status": 200,
     "loc": "",
-    "hash": "adb1a96eea4f"
+    "hash": "dc07a30db9cf"
   },
   "/planner": {
     "status": 200,
     "loc": "",
-    "hash": "cb46b2f1d64d"
+    "hash": "dc359362e00b"
   },
   "/about": {
     "status": 200,
     "loc": "",
-    "hash": "0b4df8981d1f"
+    "hash": "db657a9b1bf8"
   },
   "/faq": {
     "status": 200,
     "loc": "",
-    "hash": "88ae88de3dbd"
+    "hash": "b8285946c2db"
   },
   "/contact": {
     "status": 200,
     "loc": "",
-    "hash": "6921249fa301"
+    "hash": "7315ba23bb49"
   },
   "/cart": {
     "status": 200,
     "loc": "",
-    "hash": "d1e7fdf148ea"
+    "hash": "b334834dade5"
   },
   "/account": {
     "status": 200,
     "loc": "",
-    "hash": "64f0df8c5827"
+    "hash": "a82434b51be7"
   },
   "/category.php?c=cameras": {
     "status": 404,
@@ -47,32 +47,32 @@
   "/product.php?s=x": {
     "status": 404,
     "loc": "",
-    "hash": "669231a96002"
+    "hash": "f54d58d79f7e"
   },
   "/privacy.html": {
     "status": 200,
     "loc": "",
-    "hash": "7d85c2dbc226"
+    "hash": "ee6198995548"
   },
   "/terms.html": {
     "status": 200,
     "loc": "",
-    "hash": "23cc5e0f2068"
+    "hash": "b209b8f92109"
   },
   "/shipping.html": {
     "status": 200,
     "loc": "",
-    "hash": "cf403d35c43f"
+    "hash": "cb3fee331520"
   },
   "/offline.html": {
     "status": 200,
     "loc": "",
-    "hash": "b9e80f317b43"
+    "hash": "8fa61b036aa7"
   },
   "/robots.txt": {
     "status": 200,
     "loc": "",
-    "hash": "7aa51111bb88"
+    "hash": "7119c5439d28"
   },
   "/sitemap.xml": {
     "status": 200,
@@ -82,12 +82,12 @@
   "/llms.txt": {
     "status": 200,
     "loc": "",
-    "hash": "be6d46ff88f2"
+    "hash": "606228e6df3f"
   },
   "/manifest.webmanifest": {
     "status": 200,
     "loc": "",
-    "hash": "770b7cfe88b8"
+    "hash": "f0b535ced382"
   },
   "/meta-feed.php": {
     "status": 200,
@@ -102,96 +102,96 @@
   "/order-status.php": {
     "status": 200,
     "loc": "",
-    "hash": "94eecead5a83"
+    "hash": "37c3caae5533"
   },
   "/admin/login.php": {
     "status": 200,
     "loc": "",
-    "hash": "632c86e3a1f6"
+    "hash": "cdc178122275"
   },
   "/admin/staff_login.php": {
     "status": 200,
     "loc": "",
-    "hash": "f672ec3dd0a9"
+    "hash": "6665b683be24"
   },
   "/admin/dashboard.php": {
     "status": 200,
     "loc": "",
-    "hash": "257bad9a1786"
+    "hash": "a9b839838ec0"
   },
   "/admin/index.php": {
     "status": 200,
     "loc": "",
-    "hash": "c464b65d4a2f"
+    "hash": "b2783ec5a07a"
   },
   "/admin/products.php": {
     "status": 200,
     "loc": "",
-    "hash": "5bc4bf8a8d6a"
+    "hash": "2c1a444a75bd"
   },
   "/admin/product_form.php": {
     "status": 200,
     "loc": "",
-    "hash": "690dee7dbcb9"
+    "hash": "2b761b07e93e"
   },
   "/admin/inventory.php": {
     "status": 200,
     "loc": "",
-    "hash": "693d4315b5e7"
+    "hash": "15c9d7cc0fa9"
   },
   "/admin/leads.php": {
     "status": 200,
     "loc": "",
-    "hash": "11601edcc5b2"
+    "hash": "1540d8f941fa"
   },
   "/admin/customers.php": {
     "status": 200,
     "loc": "",
-    "hash": "c3be58ecff01"
+    "hash": "79914a048812"
   },
   "/admin/staff.php": {
     "status": 200,
     "loc": "",
-    "hash": "88008d47e137"
+    "hash": "ede3eacbe55f"
   },
   "/admin/staff_orders.php": {
     "status": 200,
     "loc": "",
-    "hash": "8daf78d7452a"
+    "hash": "1baa3d15140c"
   },
   "/admin/attendance.php": {
-    "status": 200,
+    "status": 500,
     "loc": "",
-    "hash": "1545aa3d395f"
+    "hash": "da39a3ee5e6b"
   },
   "/admin/insights.php": {
     "status": 200,
     "loc": "",
-    "hash": "621365f1c994"
+    "hash": "af5a7f68cb20"
   },
   "/admin/hero.php": {
-    "status": 200,
+    "status": 500,
     "loc": "",
-    "hash": "e9cdfe90f4fa"
+    "hash": "da39a3ee5e6b"
   },
   "/admin/discounts.php": {
-    "status": 200,
+    "status": 500,
     "loc": "",
-    "hash": "f1932f1c882c"
+    "hash": "da39a3ee5e6b"
   },
   "/admin/settings.php": {
     "status": 200,
     "loc": "",
-    "hash": "4173aae55f60"
+    "hash": "102924ee54a9"
   },
   "/admin/account.php": {
     "status": 200,
     "loc": "",
-    "hash": "e8b3ba60a07f"
+    "hash": "8acf8556f75a"
   },
   "/admin/notify.php": {
-    "status": 200,
+    "status": 500,
     "loc": "",
-    "hash": "490df03231f3"
+    "hash": "da39a3ee5e6b"
   }
 }

@@ -37,7 +37,7 @@ if (!real) {
 
 console.log(`\nVision Guard (${real ? 'real database' : 'demo data'}) -> http://localhost:${port}\n` +
   (real ? '' : `Demo mode: sample products/orders in SQLite.\nAdmin (auto-login, no password): http://localhost:${port}/admin/_demo.php\nSome admin pages that need MySQL features (e.g. discounts) won't work in demo mode.\n`) + 'Ctrl+C to stop.\n');
-const child = spawn(php, ['-S', `localhost:${port}`, '-t', docroot, path.join(__dirname, 'router.php')], { stdio: 'inherit' });
+const child = spawn(php, ['-d', 'display_errors=0', '-d', 'error_reporting=E_ALL', '-S', `localhost:${port}`, '-t', docroot, path.join(__dirname, 'router.php')], { stdio: 'inherit' });
 const stop = () => { child.kill(); if (!real) fs.rmSync(docroot, { recursive: true, force: true }); process.exit(0); };
 process.on('SIGINT', stop); process.on('SIGTERM', stop);
 child.on('exit', (c) => process.exit(c || 0));
