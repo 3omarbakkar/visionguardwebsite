@@ -107,7 +107,7 @@
   "/admin/login.php": {
     "status": 200,
     "loc": "",
-    "hash": "cdc178122275"
+    "hash": "41fb8cff7c39"
   },
   "/admin/staff_login.php": {
     "status": 200,
@@ -122,7 +122,7 @@
   "/admin/index.php": {
     "status": 200,
     "loc": "",
-    "hash": "b2783ec5a07a"
+    "hash": "26458c1d45af"
   },
   "/admin/products.php": {
     "status": 200,

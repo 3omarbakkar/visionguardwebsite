@@ -1,5 +1,5 @@
 <?php
-// Receives the Google Identity Services redirect (POST: credential + g_csrf_token), verifies the ID token
+// with Google, and signs in the matching admin. (A temporary password form exists on login.php, off unless the server enables it.)
 // with Google, and signs in the matching admin. Google-only: there is no password fallback.
 require_once __DIR__ . '/includes/auth.php';
 

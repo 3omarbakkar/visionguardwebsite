@@ -29,6 +29,9 @@ const normalise = (s) => s
   .replace(/name="csrf" value="[0-9a-f]+"/g, 'name="csrf" value="X"')
   .replace(/name=&quot;csrf&quot; value=&quot;[0-9a-f]+&quot;/g, 'name=&quot;csrf&quot; value=&quot;X&quot;')
   .replace(/\b\d\d\/\d\d\/20\d\d \d\d:\d\d(:\d\d)?/g, 'TS')
+  // The dashboard also prints relative times: "24/11 23:36" (no year) and "النهارده 23:36" (today).
+  .replace(/\b\d\d\/\d\d \d\d:\d\d\b/g, 'TS')
+  .replace(/النهارده \d\d:\d\d/g, 'TS')
   .replace(/(<span>[^<\d]*)\d\d:\d\d(<\/span>)/g, '$1TS$2')
   .replace(/\b20\d\d-\d\d-\d\d[ T]\d\d:\d\d(:\d\d)?/g, 'TS')
   .replace(/\b\d{10,13}\b/g, 'N')
