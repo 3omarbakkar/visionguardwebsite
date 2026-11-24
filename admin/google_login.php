@@ -45,7 +45,18 @@ try {
     $stmt->execute([$email]);
     $user = $stmt->fetch();
 } catch (PDOException $e) {
-    error_log('admin google login: lookup failed (is migration-admin-google.sql applied?)');
+    // Distinguish "the migration was never run" from a genuine database fault, so the next
+    // person reading the log is not left guessing. 42S22 = unknown column, 42S02 = unknown
+    // table. Log the SQLSTATE only, never the driver message: it can echo back the query.
+    // The page the visitor sees stays generic either way.
+    $sqlstate = (string)($e->errorInfo[0] ?? $e->getCode());
+    if ($sqlstate === '42S22' || $sqlstate === '42S02') {
+        error_log('admin google login: admin_users is missing the google_email column'
+            . ' (SQLSTATE ' . $sqlstate . ') - run migration-admin-google.sql against the'
+            . ' live database, then retry. See dev/check-admin-schema.php.');
+    } else {
+        error_log('admin google login: database error during lookup (SQLSTATE ' . $sqlstate . ')');
+    }
     vg_gl_fail('setup');
 }
 if (!$user) { vg_admin_login_failed($rate); vg_gl_fail('denied'); }
