@@ -30,6 +30,8 @@ const normalise = (s) => s
   .replace(/(<span>[^<\d]*)\d\d:\d\d(<\/span>)/g, '$1TS$2')
   .replace(/\b20\d\d-\d\d-\d\d[ T]\d\d:\d\d(:\d\d)?/g, 'TS')
   .replace(/\b\d{10,13}\b/g, 'N')
+  // admin/index.php greets by time of day, so the baseline would flip at noon every day.
+  .replace(/صباح الخير|مساء الخير/g, 'GREET')
   .replace(/[A-Za-z]:[\\/][^\s<'"]*?\.dev-site/g, 'ROOT')
   .replace(/\\/g, '/')
   .replace(/nonce="[^"]*"/g, 'nonce="X"');
