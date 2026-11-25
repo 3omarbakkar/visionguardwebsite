@@ -2,42 +2,42 @@
   "/": {
     "status": 200,
     "loc": "",
-    "hash": "36bd13f0d8f8"
+    "hash": "9db131250b3a"
   },
   "/shop": {
     "status": 200,
     "loc": "",
-    "hash": "4295f38aafed"
+    "hash": "501b0de795c6"
   },
   "/planner": {
     "status": 200,
     "loc": "",
-    "hash": "fc2e38fb36ed"
+    "hash": "7c5bbfefcd75"
   },
   "/about": {
     "status": 200,
     "loc": "",
-    "hash": "94b9cb23c6f8"
+    "hash": "96a370c87ee7"
   },
   "/faq": {
     "status": 200,
     "loc": "",
-    "hash": "830ad9283f60"
+    "hash": "a832a07882ce"
   },
   "/contact": {
     "status": 200,
     "loc": "",
-    "hash": "5f55dae670fe"
+    "hash": "7f6f106bc418"
   },
   "/cart": {
     "status": 200,
     "loc": "",
-    "hash": "1cd879038c9d"
+    "hash": "6361c998227e"
   },
   "/account": {
     "status": 200,
     "loc": "",
-    "hash": "54fe41143915"
+    "hash": "0bf882c3f1bc"
   },
   "/category.php?c=cameras": {
     "status": 404,
