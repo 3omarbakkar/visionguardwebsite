@@ -107,7 +107,7 @@
   "/admin/login.php": {
     "status": 200,
     "loc": "",
-    "hash": "5641b7c5cf83"
+    "hash": "99cebec0c8a3"
   },
   "/admin/staff_login.php": {
     "status": 200,
@@ -117,47 +117,47 @@
   "/admin/dashboard.php": {
     "status": 200,
     "loc": "",
-    "hash": "9a730084374f"
+    "hash": "1babebb2153b"
   },
   "/admin/index.php": {
     "status": 200,
     "loc": "",
-    "hash": "c5cefe5e7967"
+    "hash": "07ffad24ab32"
   },
   "/admin/products.php": {
     "status": 200,
     "loc": "",
-    "hash": "ba5611e472d6"
+    "hash": "83b421883c88"
   },
   "/admin/product_form.php": {
     "status": 200,
     "loc": "",
-    "hash": "724b3df6da0a"
+    "hash": "a1b049a66e32"
   },
   "/admin/inventory.php": {
     "status": 200,
     "loc": "",
-    "hash": "bd712d875cd2"
+    "hash": "ceddadd77762"
   },
   "/admin/leads.php": {
     "status": 200,
     "loc": "",
-    "hash": "90be59bc55b9"
+    "hash": "b2c567f64f05"
   },
   "/admin/customers.php": {
     "status": 200,
     "loc": "",
-    "hash": "e9dd8d7bb22d"
+    "hash": "997e0340e37f"
   },
   "/admin/staff.php": {
     "status": 200,
     "loc": "",
-    "hash": "1e9c829305dc"
+    "hash": "113005882228"
   },
   "/admin/staff_orders.php": {
     "status": 200,
     "loc": "",
-    "hash": "6ffb7892acd9"
+    "hash": "e468f4af9125"
   },
   "/admin/attendance.php": {
     "status": 500,
@@ -167,7 +167,7 @@
   "/admin/insights.php": {
     "status": 200,
     "loc": "",
-    "hash": "f625399937a6"
+    "hash": "80c6b0a3085a"
   },
   "/admin/hero.php": {
     "status": 500,
@@ -182,12 +182,12 @@
   "/admin/settings.php": {
     "status": 200,
     "loc": "",
-    "hash": "3b78baf4270a"
+    "hash": "0ca2f3bf687e"
   },
   "/admin/account.php": {
     "status": 200,
     "loc": "",
-    "hash": "53aae0240580"
+    "hash": "b1ba5d8e1069"
   },
   "/admin/notify.php": {
     "status": 500,
