@@ -37,7 +37,6 @@ nav.side{padding-bottom:8px !important}
 #vg-panel-tools{padding:6px 10px 8px !important;margin:0 0 4px !important}
 #vg-panel-tools a,#vg-panel-tools .vg-lang{height:44px !important}
 body nav.side h1{margin:0 0 2px !important}
-#vg-panel-tools{margin:0 0 4px !important;padding:6px 10px 8px !important}
 .vg-burger{position:fixed;top:10px;inset-inline-end:10px;z-index:70;width:44px;height:44px;border:0;border-radius:10px;background:#0667a5;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 @media (min-width:761px){.vg-burger{display:none !important}}
 </style>
