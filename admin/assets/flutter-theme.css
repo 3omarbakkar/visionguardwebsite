@@ -18,36 +18,29 @@ html[data-theme="dark"]{
 
 html[data-theme="dark"] body{background:var(--fx-bg) !important;color:var(--fx-text) !important}
 html[data-theme="dark"] body main{color:var(--fx-text) !important}
-html[data-theme="dark"] body main h1,html body main h2,html body main h3,html body main h4{color:#fff !important}
-html[data-theme="dark"] body main p,html body main li,html body main td,html body main span{color:inherit}
-html[data-theme="dark"] body .muted,html body label,html body th,html body .ch span{color:var(--fx-muted) !important}
+html[data-theme="dark"] body main h1,html[data-theme="dark"] body main h2,html[data-theme="dark"] body main h3,html[data-theme="dark"] body main h4{color:#fff !important}
+html[data-theme="dark"] body .muted,html[data-theme="dark"] body label,html[data-theme="dark"] body th,html[data-theme="dark"] body .ch span{color:var(--fx-muted) !important}
 html[data-theme="dark"] body a{color:var(--fx-text)}
 html[data-theme="dark"] body main a:not(.btn):not(.card):not(.kpi):not(.oc){color:var(--fx-accent)}
 
 /* sidebar */
-html[data-theme="dark"] body nav.side{background:var(--fx-card) !important;color:var(--fx-text) !important;border-inline-end:1px solid var(--fx-line) !important;border-inline-start:0 !important;box-shadow:none !important}
-html[data-theme="dark"] body nav.side h1{background:transparent !important;color:#fff !important;border-bottom:1px solid var(--fx-line) !important;box-shadow:none !important}
-html[data-theme="dark"] body nav.side a,html body nav.side summary{color:var(--fx-muted) !important;background:transparent !important;border-radius:10px !important;margin:2px 10px !important}
-html[data-theme="dark"] body nav.side a:hover,html body nav.side summary:hover{color:#fff !important;background:rgba(255,255,255,.04) !important}
-html[data-theme="dark"] body nav.side a.active{color:#fff !important;background:var(--fx-accent-soft) !important;box-shadow:inset 3px 0 0 var(--fx-accent) !important;font-weight:700}
-html[data-theme="dark"] body nav.side svg,html body nav.side .ic{color:currentColor !important;stroke:currentColor}
-html[data-theme="dark"] body nav.side .sep{background:var(--fx-line) !important;border-color:var(--fx-line) !important}
+html[data-theme="dark"] body nav.side{background:linear-gradient(180deg,#0a78bf 0%,#0667a5 38%,#0b3f87 78%,#0b2f6b 100%) !important;color:#fff !important;border:0 !important;box-shadow:none !important}
 
 /* top bar */
 html[data-theme="dark"] body .vg-head{background:var(--fx-bg) !important;border-bottom:0 !important;box-shadow:none !important;color:var(--fx-text) !important}
-html[data-theme="dark"] body .vg-head .vg-title,html body .vg-head strong,html body .vg-head b{color:#fff !important}
-html[data-theme="dark"] body .vg-head .vg-hb,html body .vg-head a,html body .vg-head .vg-user,html body .vg-head button{background:var(--fx-card) !important;color:var(--fx-text) !important;border:1px solid var(--fx-line) !important;box-shadow:none !important}
+html[data-theme="dark"] body .vg-head .vg-title,html[data-theme="dark"] body .vg-head strong,html[data-theme="dark"] body .vg-head b{color:#fff !important}
+html[data-theme="dark"] body .vg-head .vg-hb,html[data-theme="dark"] body .vg-head a,html[data-theme="dark"] body .vg-head .vg-user,html[data-theme="dark"] body .vg-head button{background:var(--fx-card) !important;color:var(--fx-text) !important;border:1px solid var(--fx-line) !important;box-shadow:none !important}
 html[data-theme="dark"] body .vg-head svg{color:var(--fx-text) !important}
 
 /* cards, panels, tables */
 html[data-theme="dark"] body :is(.card,.kpi,.topbar,.vg-box,.oc,form.box,.vg-pop,#vg-crop .vc-box){background:var(--fx-card) !important;color:var(--fx-text) !important;border:1px solid var(--fx-line) !important;box-shadow:none !important;border-radius:14px !important}
-html[data-theme="dark"] body .ch h3,html body .card h3{color:#fff !important}
+html[data-theme="dark"] body .ch h3,html[data-theme="dark"] body .card h3{color:#fff !important}
 html[data-theme="dark"] body .kpi b{color:#fff !important}
-html[data-theme="dark"] body .kpi span,html body .kpi small{color:var(--fx-muted) !important}
+html[data-theme="dark"] body .kpi span,html[data-theme="dark"] body .kpi small{color:var(--fx-muted) !important}
 html[data-theme="dark"] body table{color:var(--fx-text)}
 html[data-theme="dark"] body th{background:transparent !important;color:var(--fx-muted) !important;border-bottom:1px solid var(--fx-line) !important}
 html[data-theme="dark"] body td{border-bottom:1px solid var(--fx-line) !important;color:var(--fx-text)}
-html[data-theme="dark"] body tbody tr:hover,html body .card table tbody tr:hover{background:rgba(255,255,255,.035) !important}
+html[data-theme="dark"] body tbody tr:hover,html[data-theme="dark"] body .card table tbody tr:hover{background:rgba(255,255,255,.035) !important}
 html[data-theme="dark"] body .thumb{background:var(--fx-field);border-color:var(--fx-line)}
 
 /* inputs */
@@ -60,8 +53,8 @@ html[data-theme="dark"] body .btn{background:var(--fx-accent) !important;color:#
 html[data-theme="dark"] body .btn:hover{filter:brightness(1.08)}
 html[data-theme="dark"] body .btn.secondary{background:var(--fx-card) !important;color:var(--fx-text) !important;border:1px solid var(--fx-line) !important}
 html[data-theme="dark"] body .btn.danger{background:#e5484d !important}
-html[data-theme="dark"] body .vg-tabs a,html body .vg-tabs button{background:var(--fx-card) !important;color:var(--fx-muted) !important;border:1px solid var(--fx-line) !important}
-html[data-theme="dark"] body .vg-tabs a.on,html body .vg-tabs a.active{background:var(--fx-accent) !important;color:#fff !important;border-color:var(--fx-accent) !important}
+html[data-theme="dark"] body .vg-tabs a,html[data-theme="dark"] body .vg-tabs button{background:var(--fx-card) !important;color:var(--fx-muted) !important;border:1px solid var(--fx-line) !important}
+html[data-theme="dark"] body .vg-tabs a.on,html[data-theme="dark"] body .vg-tabs a.active{background:var(--fx-accent) !important;color:#fff !important;border-color:var(--fx-accent) !important}
 
 /* messages */
 html[data-theme="dark"] body .flash.ok{background:rgba(34,197,94,.14) !important;color:#86efac !important;border:0}

@@ -37,6 +37,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     }
 }
 
+// The sign-in page is always light, whatever theme the admin is using.
+$vgForceLight = true;
 $page_title = 'تسجيل الدخول';
 require __DIR__ . '/includes/layout_top.php';
 ?>
