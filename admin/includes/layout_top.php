@@ -631,8 +631,16 @@ if ($admin): ?>
 <?php endif; ?>
 <?php endif; ?>
 <main>
+<?php if ($admin): $vgMAvF = dirname(__DIR__, 2) . '/images/avatars/u' . (int)($admin['id'] ?? 0) . '.jpg';
+$vgMPhoto = is_file($vgMAvF) ? '/images/avatars/u' . (int)$admin['id'] . '.jpg?v=' . filemtime($vgMAvF) : '';
+$vgMName = (string)(($admin['full_name'] ?? '') ?: ($admin['username'] ?? '')); ?>
+<div class="vg-mtools">
+  <button class="vg-mtheme vg-theme" type="button" aria-label="تبديل الوضع الفاتح والداكن" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg></button>
+  <a class="vg-mava" href="account.php" aria-label="الحساب: <?= htmlspecialchars($vgMName) ?>"<?= $vgMPhoto ? ' style="background-image:url(\'' . htmlspecialchars($vgMPhoto) . '\')"' : '' ?>><?= $vgMPhoto ? '' : htmlspecialchars(mb_strtoupper(mb_substr($vgMName ?: '?', 0, 1))) ?></a>
+</div>
+<?php endif; ?>
 <div class="vg-head">
-<script>(function(){function set(t){document.documentElement.setAttribute("data-theme",t);try{localStorage.setItem("vg-theme",t)}catch(e){}}function sync(){var b=document.querySelector(".vg-theme");if(!b)return;var d=document.documentElement.getAttribute("data-theme")==="dark";b.setAttribute("aria-pressed",d?"true":"false");var t=b.querySelector(".vg-theme-lb");if(t)t.textContent=d?"الوضع الفاتح":"الوضع الداكن";b.title=t?t.textContent:"";}document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".vg-theme");if(!b)return;set(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark");sync();});document.addEventListener("DOMContentLoaded",sync);})();</script>
+<script>(function(){function set(t){document.documentElement.setAttribute("data-theme",t);try{localStorage.setItem("vg-theme",t)}catch(e){}}function sync(){var d=document.documentElement.getAttribute("data-theme")==="dark";document.querySelectorAll(".vg-theme").forEach(function(b){b.setAttribute("aria-pressed",d?"true":"false");var t=b.querySelector(".vg-theme-lb");if(t)t.textContent=d?"الوضع الفاتح":"الوضع الداكن";b.title=d?"الوضع الفاتح":"الوضع الداكن";});}document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".vg-theme");if(!b)return;set(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark");sync();});document.addEventListener("DOMContentLoaded",sync);})();</script>
   <div class="vg-head-r">
     <button class="vg-burger" type="button" aria-label="القائمة" aria-expanded="false" aria-controls="vg-nav" onclick="this.setAttribute('aria-expanded',document.body.classList.toggle('nav-open')?'true':'false')"><?= $admin ? $vgIc('menu') : '' ?></button>
     <b class="vg-title"><?= htmlspecialchars($page_title ?? 'لوحة التحكم') ?></b>

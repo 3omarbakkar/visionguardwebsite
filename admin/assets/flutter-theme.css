@@ -110,3 +110,16 @@ html body main :is(.muted,small,.badge,.vgh-bd,.ch small,.kpi span,.vgh-kpi .sb,
 html body main :is([style*="font-size:11px"],[style*="font-size:11.5px"],.bar,.oc-f label,.vgh-bar b,.vgh-days,.vgh-days em){font-size:12px !important}
 /* phone card-table rows (table.vg-stack) had a fixed white background: follow the dark card colour */
 html[data-theme="dark"] body table.vg-stack tr{background:var(--fx-card) !important;border-color:var(--fx-line) !important}
+
+/* phones: header holds the avatar at the far left and the theme switch beside it; the menu button moves to the right */
+.vg-mtools{display:none}
+@media (max-width:860px){
+  .vg-mtools{position:fixed;top:10px;inset-inline-end:10px;z-index:70;display:flex;align-items:center;gap:8px}
+  .vg-mtools .vg-mtheme,.vg-mtools .vg-mava{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;border:0;padding:0;margin:0;cursor:pointer;background:rgba(255,255,255,.14);color:#fff;text-decoration:none;font:inherit;font-weight:700;font-size:16px}
+  .vg-mtools .vg-mava{background-color:#1d4ed8;background-size:cover;background-position:center}
+  .vg-mtools .vg-mtheme .ic{width:20px;height:20px}
+  .vg-mtools :is(.vg-mtheme,.vg-mava):focus-visible{outline:2px solid #fff;outline-offset:2px}
+  .vg-burger{inset-inline-start:10px !important;inset-inline-end:auto !important}
+  nav.side button.vg-theme{display:none}
+}
+.vg-mtools .vg-mtheme{background:#0667a5 !important;color:#fff !important}
