@@ -9,8 +9,11 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 # Never serve include files or provider credentials directly.
 RewriteRule ^(?:api/(?:_[^/]+|sms-config)\.php|admin/includes/.*)$ - [F,L]
 
-# Block editor/backup/database/config artifacts. This also blocks names such as index.php.bak-2026.
-<FilesMatch "(?i)(\.(?:bak|backup|old|orig|save|sql|gz|zip|log|env|ini|conf|swp|tmp|dist|inc)(?:[-.]|$)|~)$">
+# Block editor/backup/database/config artifacts, including dated copies such as index.php.bak-20261018,
+# index.php.bak3-20261116-cap and x.bak_2026. The extension token may be followed by digits and then by
+# - . _ plus anything, or end the name. The token must end at that point, so names like site.logo.png
+# (".log" + "o") and app.config.js (".conf" + "ig") are not caught. A trailing ~ (editor backup) is blocked too.
+<FilesMatch "(?i)(\.(?:bak|backup|old|orig|save|sql|gz|zip|log|env|ini|conf|swp|tmp|dist|inc)\d*(?:[-._].*)?$|~$)">
   <IfModule mod_authz_core.c>
     Require all denied
   </IfModule>
