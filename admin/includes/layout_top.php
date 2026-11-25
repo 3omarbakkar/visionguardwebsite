@@ -10,6 +10,7 @@ $flash = flash_get();
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?= htmlspecialchars($page_title ?? 'لوحة التحكم') ?> · Vision Guard</title>
 <meta name="robots" content="noindex,nofollow">
+<style id="vg-tokens">:root{--vg-focus:#1d4ed8}</style>
 <style id="vg-head-mobile">
 @media (max-width:760px){
   .vg-head{position:fixed !important;top:0 !important;left:0 !important;right:0 !important;width:auto !important;margin:0 !important;z-index:60 !important}
@@ -25,19 +26,19 @@ $flash = flash_get();
 #vg-panel-tools .vg-title{display:none}
 #vg-panel-tools .vg-hb,#vg-panel-tools a,#vg-panel-tools .vg-user{background:rgba(255,255,255,.12) !important;color:#fff !important;border:0 !important;border-radius:8px;padding:6px 10px;font-size:13px;line-height:1.4;text-decoration:none;cursor:pointer;box-shadow:none !important}
 #vg-panel-tools .vg-hb svg{color:#fff}
-#vg-panel-tools a{flex:1 1 100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;white-space:nowrap}
-#vg-panel-tools .vg-lang{flex:1 1 0;min-width:44px;height:38px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;padding:0 !important}
-#vg-panel-tools .vg-user{width:38px;height:38px;flex:0 0 38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;padding:0 !important;font-weight:700;font-size:15px;background:#fff !important;color:#1d4ed8 !important;cursor:default}
+#vg-panel-tools a{flex:1 1 100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;white-space:nowrap}
+#vg-panel-tools .vg-lang{flex:1 1 0;min-width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;padding:0 !important}
+#vg-panel-tools .vg-user{width:44px;height:44px;flex:0 0 44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;padding:0 !important;font-weight:700;font-size:15px;background:#fff !important;color:#1d4ed8 !important;cursor:default}
 nav.side a:not(#vg-panel-tools a){padding:6px 12px !important;margin-bottom:1px !important}
 nav.side .sep{margin:8px 0 !important}
-nav.side a:not(#vg-panel-tools a){min-height:34px !important}
-nav.side summary{min-height:34px !important;padding:6px 16px !important}
+nav.side a:not(#vg-panel-tools a){min-height:44px !important}
+nav.side summary{min-height:44px !important;padding:6px 16px !important}
 nav.side{padding-bottom:8px !important}
 #vg-panel-tools{padding:6px 10px 8px !important;margin:0 0 4px !important}
-#vg-panel-tools a,#vg-panel-tools .vg-lang{height:36px !important}
+#vg-panel-tools a,#vg-panel-tools .vg-lang{height:44px !important}
 body nav.side h1{margin:0 0 2px !important}
 #vg-panel-tools{margin:0 0 4px !important;padding:6px 10px 8px !important}
-.vg-burger{position:fixed;top:10px;inset-inline-end:10px;z-index:70;width:42px;height:42px;border:0;border-radius:10px;background:#0667a5;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.vg-burger{position:fixed;top:10px;inset-inline-end:10px;z-index:70;width:44px;height:44px;border:0;border-radius:10px;background:#0667a5;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 @media (min-width:761px){.vg-burger{display:none !important}}
 </style>
 <script id="vg-panel-js">
@@ -76,7 +77,7 @@ nav.side .vg-pop a.vg-danger{color:#b91c1c !important}
 #vg-crop .vc-ok{background:#1d4ed8;color:#fff}
 #vg-crop .vc-no{background:#eef3fa;color:#1f3154}
 #vg-crop button:disabled{opacity:.6;cursor:default}
-#vg-crop button:focus-visible,#vg-crop input:focus-visible{outline:2px solid #1d4ed8;outline-offset:2px}
+#vg-crop button:focus-visible,#vg-crop input:focus-visible{outline:2px solid var(--vg-focus);outline-offset:2px}
 nav.side .vg-pop a{color:#1f3154 !important;background:none;display:flex;align-items:center;gap:10px;padding:8px 10px !important;border-radius:8px;font-size:13.5px;min-height:36px !important}
 nav.side .vg-pop a:hover{background:#eef3fa !important}
 </style>
@@ -164,7 +165,7 @@ nav.side .vg-pop a:hover{background:#eef3fa !important}
 <style id="vg-v3">
 .vg-burger{background:#0667a5 !important;color:#fff !important;border:0 !important;box-shadow:0 4px 12px rgba(15,27,45,.28) !important}
 .vg-burger:hover{background:#055589 !important}
-.vg-burger:focus-visible{outline:2px solid #1d4ed8;outline-offset:2px}
+.vg-burger:focus-visible{outline:2px solid var(--vg-focus);outline-offset:2px}
 .vg-burger .ic{width:22px;height:22px}
 main .card{border:1px solid #e3e9f1;border-radius:14px;box-shadow:0 1px 2px rgba(15,27,45,.05)}
 main table th{font-size:12px;font-weight:600;color:#64748b;white-space:nowrap}
@@ -365,7 +366,7 @@ nav.side details[open]>summary{color:#1f3154}
 .btn.sm{min-height:32px}
 input[type=text],input[type=number],input[type=email],input[type=tel],input[type=password],input[type=search],select,textarea{min-height:38px;border:1px solid #d5dde8;background:#fff;transition:border-color .15s ease-out,box-shadow .15s ease-out}
 input:focus-visible,select:focus-visible,textarea:focus-visible{outline:0;border-color:#05b3e9;box-shadow:0 0 0 3px rgba(5,179,233,.25)}
-a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #05b3e9;outline-offset:2px}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--vg-focus);outline-offset:2px}
 /* tables */
 table{border-collapse:separate;border-spacing:0}
 th{position:sticky;top:0;text-align:right;color:#51607a;font-weight:700;border-bottom:1px solid #e2e8ef}
@@ -397,7 +398,7 @@ nav.side{scrollbar-width:thin}
 .oc{--st:#94a3b8;border-right:5px solid var(--st) !important}
 .oc.s-new{--st:#2563eb}.oc.s-contacted{--st:#d97706}.oc.s-delivered{--st:#16a34a}.oc.s-closed{--st:#6366f1}.oc.s-cancelled{--st:#dc2626}
 /* hit areas: at least 40px on desktop controls */
-.btn.sm,.vg-hb{min-height:40px;display:inline-flex;align-items:center;justify-content:center}
+.btn.sm,.vg-hb{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
 /* icon stroke matches text weight */
 nav.side a .ic{stroke-width:1.5}
 nav.side summary .ic{stroke-width:2}
@@ -431,7 +432,7 @@ main{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
 .vg-title{overflow:hidden;text-overflow:ellipsis;max-width:46vw}
 @media(max-width:860px){
   .vg-hb span{display:none}
-  .vg-hb{padding:0;width:40px}
+  .vg-hb{padding:0;width:44px}
   th{top:0}
   .vg-head{padding:0 12px}
 }
@@ -594,7 +595,7 @@ $vgGroup = function ($title, $icon, $links) use ($vgIc) {
 $vgIsAdmin = ($vgRole === 'admin' || (function_exists('current_role') && current_role() === 'admin'));
 if ($admin): ?>
 <div class="vg-scrim" onclick="document.body.classList.remove('nav-open')"></div>
-<nav class="side">
+<nav class="side" id="vg-nav">
   <h1>Vision Guard</h1>
   <?= can('dashboard') ? $vgLink('index.php', 'dashboard', 'الرئيسية', 'home') : '' ?>
   <?= $vgGroup('المبيعات', 'cart', [
@@ -629,7 +630,7 @@ if ($admin): ?>
 <main>
 <div class="vg-head">
   <div class="vg-head-r">
-    <button class="vg-burger" type="button" aria-label="القائمة" onclick="document.body.classList.toggle('nav-open')"><?= $admin ? $vgIc('menu') : '' ?></button>
+    <button class="vg-burger" type="button" aria-label="القائمة" aria-expanded="false" aria-controls="vg-nav" onclick="this.setAttribute('aria-expanded',document.body.classList.toggle('nav-open')?'true':'false')"><?= $admin ? $vgIc('menu') : '' ?></button>
     <b class="vg-title"><?= htmlspecialchars($page_title ?? 'لوحة التحكم') ?></b>
   </div>
   <div class="vg-head-l">
