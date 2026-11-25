@@ -85,3 +85,8 @@ html[data-theme="dark"] body .vgh-rr .am{color:#fff !important}
 /* light mode: the original admin page keeps white headings from an older dark design; make them readable on the light page */
 html[data-theme="light"] main :is(h1,h2,h3,h4),html[data-theme="light"] main>p{color:#0f1b2d !important}
 html[data-theme="light"] main .vgh-hd p,html[data-theme="light"] main .quick a{color:#4a5568 !important}
+
+/* dark mode logo: the same white logo the storefront uses on dark backgrounds, no white band */
+html[data-theme="dark"] body nav.side h1{background:transparent !important;box-shadow:none !important;border-bottom:1px solid rgba(255,255,255,.16) !important}
+html[data-theme="dark"] body nav.side h1::before{background:url(/images/vg-logo-footer.png) center/contain no-repeat !important;filter:none !important;box-shadow:none !important}
+html[data-theme="dark"] body nav.side h1::after{color:rgba(255,255,255,.72) !important}
