@@ -123,3 +123,11 @@ html[data-theme="dark"] body table.vg-stack tr{background:var(--fx-card) !import
   nav.side button.vg-theme{display:none}
 }
 .vg-mtools .vg-mtheme{background:#0667a5 !important;color:#fff !important}
+
+/* sidebar top row: language, theme switch, then the photo on the far left. The bottom row is replaced by this one. */
+nav.side button.vg-theme-row{display:none !important}
+#vg-panel-tools{flex-wrap:nowrap !important;align-items:center;gap:8px !important}
+#vg-panel-tools .vg-lang{order:1;flex:1 1 auto;min-width:0;height:44px !important}
+#vg-panel-tools .vg-theme-tb{order:2;width:44px;height:44px;flex:0 0 44px;padding:0 !important;display:inline-flex;align-items:center;justify-content:center;border:0 !important;border-radius:10px;background:rgba(255,255,255,.14) !important;color:#fff !important;cursor:pointer}
+#vg-panel-tools .vg-theme-tb .ic{width:20px;height:20px}
+#vg-panel-tools .vg-user{order:3;width:44px;height:44px;flex:0 0 44px}
