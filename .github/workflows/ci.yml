@@ -1,0 +1,46 @@
+name: CI
+
+# Runs the same two checks as `npm test`: PHP lint on every tracked .php file, then the smoke test
+# (starts the demo-mode dev server and fetches every page, comparing against dev/smoke-baseline.json).
+# Read-only: nothing here can change the repo or reach production. Merging to main still auto-deploys
+# through the webhook; this workflow does not gate that deploy, it only reports on pull requests.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      # PHP 8.2 matches the production server. The demo server needs pdo_sqlite; the pages use
+      # mbstring, gd (with webp/png/jpeg), curl and openssl.
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_sqlite, mbstring, gd, curl, openssl
+          tools: none
+          coverage: none
+
+      # dev/smoke.js uses fetch() and Headers.getSetCookie(), which need Node 20+.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: PHP lint
+        run: node dev/lint.js
+
+      - name: Smoke test
+        if: ${{ !cancelled() }}
+        run: node dev/smoke.js
