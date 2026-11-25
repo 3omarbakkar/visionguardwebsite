@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # PHP 8.2 matches the production server. The demo server needs pdo_sqlite; the pages use
       # mbstring, gd (with webp/png/jpeg), curl and openssl.
@@ -33,10 +33,11 @@ jobs:
           tools: none
           coverage: none
 
-      # dev/smoke.js uses fetch() and Headers.getSetCookie(), which need Node 20+.
-      - uses: actions/setup-node@v4
+      # dev/smoke.js uses fetch() and Headers.getSetCookie(), which need Node 20+. Node 20 is end of
+      # life, so this runs on 24, the current LTS.
+      - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: PHP lint
         run: node dev/lint.js
