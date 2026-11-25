@@ -50,6 +50,9 @@ document.addEventListener('DOMContentLoaded',function(){
   var l=h.querySelector('.vg-head-l'); if(l){ while(l.firstChild) box.appendChild(l.firstChild); }
   var h1=nav.querySelector('h1'); if(h1&&h1.nextSibling) nav.insertBefore(box,h1.nextSibling); else nav.insertBefore(box,nav.firstChild);
   var b=h.querySelector('.vg-burger'); if(b) document.body.appendChild(b);
+  var tb=document.createElement('button'); tb.type='button'; tb.className='vg-hb vg-theme vg-theme-tb'; tb.setAttribute('aria-label','تبديل الوضع الفاتح والداكن'); tb.setAttribute('aria-pressed','false'); tb.title='تبديل الوضع';
+  tb.innerHTML='<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>';
+  box.appendChild(tb);
   setTimeout(function(){ var ph=h.previousElementSibling; if(ph&&ph.style&&ph.style.height&&ph.id!=='vg-panel-tools'&&!ph.id) ph.remove(); var lh=h.querySelector('.vg-head-l'); if(lh&&box.parentNode){ while(lh.firstChild) box.appendChild(lh.firstChild); } var uu=box.querySelector('.vg-user'); if(uu&&!uu.dataset.v){ var nm=uu.textContent.trim(); uu.title=nm; uu.dataset.v='1'; uu.textContent=(nm.charAt(0)||'?').toUpperCase(); } },300);
 });
 </script>
@@ -625,7 +628,7 @@ if ($admin): ?>
   <div class="sep"></div>
   <?= $vgLink('account.php', 'account', 'تغيير كلمة المرور', 'lock') ?>
 <?php if ($vgRole === 'admin'): ?><a href="<?= htmlspecialchars(SITE_URL) ?>/" target="_blank"><?= $vgIc('ext') ?><span>فتح الموقع</span></a><?php endif; ?>
-  <button class="vg-theme" type="button" aria-pressed="false"><?= $vgIc('moon') ?><span class="vg-theme-lb">الوضع الفاتح</span></button>
+  <button class="vg-theme vg-theme-row" type="button" aria-pressed="false"><?= $vgIc('moon') ?><span class="vg-theme-lb">الوضع الفاتح</span></button>
   <a href="logout.php"><?= $vgIc('out') ?><span>تسجيل الخروج</span></a>
 </nav>
 <?php endif; ?>
