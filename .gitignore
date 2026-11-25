@@ -14,3 +14,6 @@ push-data/subscriptions.json
 .dev-site/
 demo.sqlite
 node_modules/
+
+# graphify knowledge-graph output (regenerable, see /graphify)
+graphify-out/
