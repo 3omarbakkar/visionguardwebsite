@@ -454,8 +454,13 @@ var CART=(function(){try{var o=JSON.parse(localStorage.getItem('vg-cart')||'{}')
 var PM=null,CSTEP='cart',CERR=false,LASTORDER=null;
 function csave(){try{localStorage.setItem('vg-cart',JSON.stringify(CART));localStorage.setItem('vg-cn',CN);localStorage.setItem('vg-ca',CA);localStorage.setItem('vg-cph',CPH)}catch(e){}}
 function cc(){var n=0;for(var k in CART)n+=CART[k];return n}
-function epOn(){return EPD>0&&(PM==='instapay'||PM==='ewallet')}function ct(){var t=0;for(var k in CART)t+=CART[k]*ep(P[k]);if(epOn())t=Math.round(t*(100-EPD))/100;return t}function epMsg(){if(!(EPD>0))return '';var ar=(typeof L!=='undefined'&&L==='ar');return '<p class="meta" style="color:#15803d;font-weight:700">'+(epOn()?(ar?'تم خصم '+EPD+'% لأنك بتدفع إلكترونياً':EPD+'% off applied for online payment'):(ar?'ادفع بإنستاباي أو محفظة واحصل على خصم '+EPD+'%':'Pay with InstaPay or e-wallet and get '+EPD+'% off'))+'</p>'}
+var PROMO='',PP=0,PMSG='';
+function ePct(){if(PM!=='instapay'&&PM!=='ewallet')return 0;return Math.max(EPD>0?EPD:0,PP>0?PP:0)}
+function epOn(){return ePct()>0}function ct(){var t=0;for(var k in CART)t+=CART[k]*ep(P[k]);var q=ePct();if(q>0)t=Math.round(t*(100-q))/100;return t}function epMsg(){if(!(EPD>0)&&!epOn())return '';var ar=(typeof L!=='undefined'&&L==='ar');return '<p class="meta" style="color:#15803d;font-weight:700">'+(epOn()?(ar?'تم خصم '+ePct()+'% لأنك بتدفع إلكترونياً':ePct()+'% off applied for online payment'):(ar?'ادفع بإنستاباي أو محفظة واحصل على خصم '+EPD+'%':'Pay with InstaPay or e-wallet and get '+EPD+'% off'))+'</p>'}
 function PN(n){var w;if(L==='ar'){var r=n%100;w=n===1?'منتج':n===2?'منتجان':(r>=3&&r<=10)?'منتجات':'منتج'}else w=n===1?'product':'products';return n+' '+w}function cupd(){var cb=$('cart');cb.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.2a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20 7H6"/></svg><span class="cbadge">'+cc()+'</span>';cb.setAttribute('aria-label',T('cart')+' · '+cc());var lv=$('cartlive');if(lv)lv.textContent=T('cart')+' · '+cc()+' · '+N(ct())+' '+T('egp')}
+function promoBox(){var ar=L==='ar';var s='<div style="margin-top:10px"><div style="display:flex;gap:8px"><input id="pcode" placeholder="'+(ar?'كود الخصم (اختياري)':'Promo code (optional)')+'" value="'+xe(PROMO)+'" autocomplete="off" style="flex:1;text-transform:uppercase"><button type="button" class="btn" onclick="applyPromo()">'+(ar?'تطبيق':'Apply')+'</button></div>';if(PP>0)s+='<p class="meta" style="color:#15803d;font-weight:700">'+(ar?'كود '+xe(PROMO)+' مفعّل: خصم '+PP+'% على الدفع بإنستاباي أو محفظة':xe(PROMO)+' applied: '+PP+'% off online payment')+' <a href="#" onclick="removePromo();return false">'+(ar?'إلغاء':'Remove')+'</a></p>';if(PMSG)s+='<p class="meta" style="color:#e5484d">'+xe(PMSG)+'</p>';return s+'</div>'}
+function applyPromo(){var el=document.getElementById('pcode'),c=((el&&el.value)||'').trim().toUpperCase();PMSG='';if(!c){PROMO='';PP=0;cartUI();return}fetch('api/promo.php?code='+encodeURIComponent(c),{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok&&j.percent>0){PROMO=j.code;PP=j.percent}else{PROMO='';PP=0;PMSG=L==='ar'?'الكود ده مش صالح أو منتهي.':'This code is not valid or has expired.'}cartUI()}).catch(function(){PMSG=L==='ar'?'حصل خطأ، حاول تاني.':'Something went wrong. Try again.';cartUI()})}
+function removePromo(){PROMO='';PP=0;PMSG='';cartUI()}
 function xe(v){return String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
 function cm(){var ar=L=='ar',m=ar?'مرحبًا Vision Guard، عايز أطلب:\n':'Hello Vision Guard, I would like to order:\n';
  Object.keys(CART).forEach(function(k,i){var p=P[k];m+=(i+1)+') '+(ar?p.a:p.e)+' × '+CART[k]+' — '+N(CART[k]*ep(p))+' '+T('egp')+'\n'});
@@ -854,15 +859,15 @@ if(VGC.needs_email){vgAddEmail(function(){placeOrder()});return}
  if(!items.length){CERR=true;cartUI();return}
  var tot=ct(),msg=cm();
  window.__po=1;
- sendLead({type:'order',name:CN,phone:CPH,message:(L=='ar'?'العنوان: ':'Address: ')+CA,cart:items,total:tot,payment_method:PM}).then(function(res){
+ sendLead({type:'order',name:CN,phone:CPH,message:(L=='ar'?'العنوان: ':'Address: ')+CA,cart:items,total:tot,payment_method:PM,promo:(ePct()>0&&PP>0)?PROMO:''}).then(function(res){
   window.__po=0;
-   if(!res||res.ok!==true||!res.id){var em=res&&res.error;if(em==='login_required'){VGC=null;vgUpd();vgAuth(function(){placeOrder()});return}if(em==='email_required'){vgAddEmail(function(){placeOrder()});return}alert(em==='product_out_of_stock'?(L=='ar'?'في منتج خلص من المخزون. حدّث الصفحة وراجع السلة.':'An item just went out of stock. Refresh the page and review your cart.'):em==='insufficient_stock'?(L=='ar'?'الكمية المطلوبة أكبر من المتاح. عدّل الكمية في السلة.':'The requested quantity is larger than the available stock. Please reduce it.'):(L=='ar'?'لم نتمكن من حفظ الطلب. السلة ما زالت محفوظة، حاول مرة أخرى.':'We could not save your order. Your cart is still saved. Please try again.'));return}
+   if(!res||res.ok!==true||!res.id){var em=res&&res.error;if(em==='login_required'){VGC=null;vgUpd();vgAuth(function(){placeOrder()});return}if(em==='email_required'){vgAddEmail(function(){placeOrder()});return}alert(em==='product_out_of_stock'?(L=='ar'?'في منتج خلص من المخزون. حدّث الصفحة وراجع السلة.':'An item just went out of stock. Refresh the page and review your cart.'):em==='insufficient_stock'?(L=='ar'?'الكمية المطلوبة أكبر من المتاح. عدّل الكمية في السلة.':'The requested quantity is larger than the available stock. Please reduce it.'):em==='invalid_promo'?(L=='ar'?'كود الخصم ده مش صالح أو منتهي. شيله وحاول تاني.':'This promo code is not valid or has expired. Remove it and try again.'):(L=='ar'?'لم نتمكن من حفظ الطلب. السلة ما زالت محفوظة، حاول مرة أخرى.':'We could not save your order. Your cart is still saved. Please try again.'));return}
   var confirmedTotal=(typeof res.total==='number'?res.total:tot),confirmedItems=res.items||items;
   msg=(L=='ar'?'مرحبًا Vision Guard، تم تسجيل طلبي رقم #':'Hello Vision Guard, my order #')+res.id+'\n';
   confirmedItems.forEach(function(it,i){msg+=(i+1)+') '+(L=='ar'?(it.name||it.name_en||'منتج'):(it.name_en||it.name||'Product'))+' × '+it.qty+' — '+N(it.line_total||0)+' '+T('egp')+'\n'});
   msg+=T('wtot')+': '+N(confirmedTotal)+' '+T('egp')+'\n'+(L=='ar'?'الاسم: ':'Name: ')+CN+'\n'+(L=='ar'?'الهاتف: ':'Phone: ')+CPH+'\n'+(L=='ar'?'العنوان: ':'Address: ')+CA+'\n'+(L=='ar'?'طريقة الدفع: ':'Payment: ')+PM;
   LASTORDER={items:confirmedItems,total:confirmedTotal,name:CN,phone:CPH,addr:CA,pm:PM,id:res.id,wa:WA+'?text='+encodeURIComponent(msg)};
-  CART={};csave();cupd();CSTEP='done';cartUI();
+  CART={};PROMO='';PP=0;PMSG='';csave();cupd();CSTEP='done';cartUI();
  }).catch(function(){window.__po=0;alert(L=='ar'?'حصل خطأ في الاتصال. السلة ما زالت محفوظة.':'Connection error. Your cart is still saved.');});
 }
 function avail(k){var p=P[k];if(!p||p.q==null)return 50;return Math.min(50,Math.max(0,p.q))}
@@ -880,7 +885,7 @@ function cartUI(){
   $('cdc').innerHTML=h;return}
  if(CSTEP=='checkout'){
   h='<h3 style="margin:0 0 10px">'+T('cot')+'</h3>';
-  h+='<p class="meta">'+T('wtot')+': '+N(ct())+' '+T('egp')+'</p>';h+=epMsg();
+  h+='<p class="meta">'+T('wtot')+': '+N(ct())+' '+T('egp')+'</p>';h+=epMsg();h+=promoBox();
   h+='<div class="cf"><input id="wn1" oninput="wl()" placeholder="'+T('wn')+'" value="'+xe(CN)+'"><input id="wn3" oninput="wl()" placeholder="'+T('wph')+'" value="'+xe(CPH)+'"><input id="wn2" oninput="wl()" placeholder="'+T('wad')+'" value="'+xe(CA)+'"></div>';
   h+='<p class="meta" style="margin-top:10px">'+T('pmt')+'</p>';
   h+='<div class="pmopts"><button type="button" class="pmopt'+(PM=='cod'?' active':'')+'" onclick="PM=\'cod\';cartUI()">'+T('pmcod')+'</button><button type="button" class="pmopt'+(PM=='instapay'?' active':'')+'" onclick="PM=\'instapay\';cartUI()">'+T('pmip')+'</button><button type="button" class="pmopt'+(PM=='ewallet'?' active':'')+'" onclick="PM=\'ewallet\';cartUI()">'+T('pmew')+'</button></div>';

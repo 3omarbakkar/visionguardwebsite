@@ -1,6 +1,7 @@
 <?php
 // Public lead endpoint. Order prices and item names are rebuilt from products table.
 require_once __DIR__ . '/_customers.php';
+require_once __DIR__ . '/_promo.php';
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
@@ -46,7 +47,7 @@ $message=isset($data['message'])?mb_substr(trim((string)$data['message']),0,2000
 $total=isset($data['total'])&&is_numeric($data['total'])?(float)$data['total']:null;
 $cartItems=isset($data['cart'])&&is_array($data['cart'])?$data['cart']:null;
 $cart=$cartItems!==null?json_encode($cartItems,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES):null;
-$paymentMethod=null; $paymentStatus='unverified';
+$paymentMethod=null; $paymentStatus='unverified'; $promoCode='';
 if($type==='order'){
     $paymentMethod=(string)($data['payment_method']??'');
     if(!in_array($paymentMethod,['cod','instapay','ewallet'],true)) vg_json_error(422,'invalid_payment_method');
@@ -54,6 +55,9 @@ if($type==='order'){
     $phone=vg_lead_phone($phone);
     if(!preg_match('/^01[0125][0-9]{8}$/',$phone)) vg_json_error(422,'bad_phone');
     $paymentStatus=$paymentMethod==='cod'?'cod_due':'pending';
+    // A promo code only counts for online payment, like the automatic discount.
+    if(in_array($paymentMethod,['instapay','ewallet'],true)) $promoCode=strtoupper(trim((string)($data['promo']??'')));
+    if(!preg_match('/^[A-Z0-9_-]{0,32}$/',$promoCode)) vg_json_error(422,'invalid_promo');
 }
 if($type==='newsletter' && (!filter_var($email,FILTER_VALIDATE_EMAIL))) vg_json_error(422,'email_required');
 if($type!=='newsletter' && !$name && !$phone && !$message && !$cart) vg_json_error(422,'empty');
@@ -105,7 +109,21 @@ if($type==='order'){
             $line=round($unit*$qty,2); $serverTotal+=$line;
             $verifiedItems[]=['id'=>(int)$id,'name'=>(string)$p['name_ar'],'name_en'=>(string)$p['name_en'],'qty'=>(int)$qty,'unit_price'=>round($unit,2),'line_total'=>$line];
         }
-        $total=round($serverTotal,2); try{$vgE=$pdo->query("SELECT active,percent FROM vg_discount_state WHERE id=1")->fetch(); if($vgE && (int)$vgE['active']===1 && in_array($paymentMethod,['instapay','ewallet'],true)){ $vgP=max(0,min(90,(int)$vgE['percent'])); if($vgP>0) $total=round($total*(1-$vgP/100),2); }}catch(Throwable $vgEx){} $cart=json_encode($verifiedItems,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+        $total=round($serverTotal,2);
+        // The automatic discount and a promo code do not stack: the larger one applies.
+        $vgGlobal=0; try{$vgE=$pdo->query("SELECT active,percent FROM vg_discount_state WHERE id=1")->fetch(); if($vgE && (int)$vgE['active']===1 && in_array($paymentMethod,['instapay','ewallet'],true)) $vgGlobal=max(0,min(90,(int)$vgE['percent']));}catch(Throwable $vgEx){}
+        $vgPromo=0; $vgUsed=false;
+        if($promoCode!==''){
+            try{ $vgPromo=vg_promo_percent($pdo,$promoCode); }catch(Throwable $vgEx2){ $vgPromo=0; }
+            if($vgPromo<=0) throw new VgLeadReject(422,'invalid_promo');
+            // Counted atomically; the transaction rolls this back if the order fails later.
+            $vgU=$pdo->prepare('UPDATE vg_promo_codes SET used_count=used_count+1 WHERE code=? AND (max_uses IS NULL OR used_count<max_uses)');
+            $vgU->execute([$promoCode]);
+            if($vgU->rowCount()!==1) throw new VgLeadReject(422,'invalid_promo');
+            $vgUsed=true;
+        }
+        $vgPct=max($vgGlobal,$vgPromo); if($vgPct>0) $total=round($total*(1-$vgPct/100),2);
+        if($vgUsed) $message='['.$promoCode.' '.$vgPromo.'%] '.(string)$message; $cart=json_encode($verifiedItems,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
         $ft=is_array($data['ft']??null)?$data['ft']:[];$hay=strtolower(mb_substr((string)($ft['utm']??''),0,40).' '.mb_substr((string)($ft['ref']??''),0,80)).(($ft['fb']??false)?' facebook':'');if(preg_match('/facebook|fb\.|instagram|meta/',$hay))$trafficSrc='facebook';elseif(strpos($hay,'tiktok')!==false)$trafficSrc='tiktok';elseif(preg_match('/whatsapp|wa\.me/',$hay))$trafficSrc='whatsapp';elseif(preg_match('/google|gclid/',$hay))$trafficSrc='google';elseif(trim($hay)==='')$trafficSrc='direct';else $trafficSrc='other';
         $stmt=$pdo->prepare('INSERT INTO leads (type,name,phone,email,message,cart_json,total,source_url,customer_id,payment_method,payment_status,traffic_src) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)');
         $stmt->execute([$type,$name,$phone,$email,$message,$cart,$total,mb_substr((string)($data['source']??($_SERVER['HTTP_REFERER']??'')),0,255),$cust?(int)$cust['id']:null,$paymentMethod,$paymentStatus,$trafficSrc]);
