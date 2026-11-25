@@ -62,7 +62,7 @@ $wa = 'https://wa.me/201105006854?text=' . rawurlencode('مرحبًا Vision Gua
 <link rel="canonical" href="<?= h($pageUrl) ?>">
 <meta name="theme-color" content="#0667a5">
 <meta property="og:type" content="website"><meta property="og:url" content="<?= h($pageUrl) ?>"><meta property="og:site_name" content="Vision Guard"><meta property="og:title" content="<?= h($cat['title']) ?>"><meta property="og:description" content="<?= h($cat['desc']) ?>"><meta property="og:locale" content="ar_EG">
-<meta property="og:image" content="https://visionguardeg.com/og-image.png">
+<meta property="og:image" content="https://visionguardeg.com/og-image.png?v=<?= (int)@filemtime(__DIR__ . '/og-image.png') ?>">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap">
 <?php foreach ($ld as $block): ?>
