@@ -4,13 +4,13 @@ require_once __DIR__ . '/perms.php';
 $admin = current_admin();
 $flash = flash_get();
 ?><!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl"<?= !empty($vgForceLight) ? ' data-theme="light"' : '' ?>>
 <head><meta charset="utf-8">
 
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?= htmlspecialchars($page_title ?? 'لوحة التحكم') ?> · Vision Guard</title>
 <meta name="robots" content="noindex,nofollow">
-<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("vg-theme")==="light"?"light":"dark")}catch(e){document.documentElement.setAttribute("data-theme","dark")}</script>
+<script>(function(){var f=document.documentElement;if(f.hasAttribute("data-theme"))return;try{f.setAttribute("data-theme",localStorage.getItem("vg-theme")==="light"?"light":"dark")}catch(e){f.setAttribute("data-theme","dark")}})();</script>
 <style id="vg-tokens">:root{--vg-focus:#1d4ed8}</style>
 <style id="vg-head-mobile">
 @media (max-width:760px){
