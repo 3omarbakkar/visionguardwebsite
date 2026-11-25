@@ -90,3 +90,23 @@ html[data-theme="light"] main .vgh-hd p,html[data-theme="light"] main .quick a{c
 html[data-theme="dark"] body nav.side h1{background:transparent !important;box-shadow:none !important;border-bottom:1px solid rgba(255,255,255,.16) !important}
 html[data-theme="dark"] body nav.side h1::before{background:url(/images/vg-logo-footer.png) center/contain no-repeat !important;filter:none !important;box-shadow:none !important}
 html[data-theme="dark"] body nav.side h1::after{color:rgba(255,255,255,.72) !important}
+
+/* theme switch: a labelled row in the sidebar, above sign-out (both themes) */
+nav.side button.vg-theme{display:flex;align-items:center;gap:12px;width:calc(100% - 20px);min-height:44px;margin:2px 10px;padding:10px 16px;border:0;border-radius:10px;background:transparent;color:rgba(255,255,255,.9);font:inherit;font-size:13.5px;font-weight:600;text-align:start;cursor:pointer}
+nav.side button.vg-theme:hover{background:rgba(255,255,255,.12);color:#fff}
+nav.side button.vg-theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+nav.side button.vg-theme .ic{width:20px;height:20px;flex:0 0 20px;opacity:.9}
+
+/* sizes: touch targets at least 44px on phones and tablets (the old rule was 38-42px) */
+@media (max-width:860px){
+  html body main :is(.btn,.btn.sm,button,select,input:not([type=checkbox]):not([type=radio]):not([type=hidden]),textarea){min-height:44px !important}
+}
+/* sizes: desktop controls at 40px minimum so forms line up (was 38-41px) */
+@media (min-width:861px){
+  html body main :is(.btn,.btn.sm,button,select,input:not([type=checkbox]):not([type=radio]):not([type=hidden]),textarea){min-height:40px}
+}
+/* sizes: nothing readable below 12px (dates, badges, field hints were 11-11.5px) */
+html body main :is(.muted,small,.badge,.vgh-bd,.ch small,.kpi span,.vgh-kpi .sb,.vgh-kpi .lb,.srow span){font-size:max(12px,0.8em) !important}
+html body main :is([style*="font-size:11px"],[style*="font-size:11.5px"],.bar,.oc-f label,.vgh-bar b,.vgh-days,.vgh-days em){font-size:12px !important}
+/* phone card-table rows (table.vg-stack) had a fixed white background: follow the dark card colour */
+html[data-theme="dark"] body table.vg-stack tr{background:var(--fx-card) !important;border-color:var(--fx-line) !important}
