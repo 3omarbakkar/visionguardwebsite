@@ -9,6 +9,7 @@ index.php.bak*
 api/sms-config.php
 admin/includes/config.local.php
 push-data/subscriptions.json
+push-data/sub-rate-*.json
 
 # local dev
 .dev-site/
