@@ -9,9 +9,6 @@ try {
 }
 if (!$vg_slides) { return; }
 $vg_n = count($vg_slides);
-// Live promo code shown on the banner. Stays hidden until the promo migration has run.
-$vg_promo = null;
-try { require_once __DIR__ . '/api/_promo.php'; $vg_promo = vg_promo_live(db()); } catch (Throwable $e) { $vg_promo = null; }
 ?>
 <style>
 .vg-hero{position:relative;max-width:1280px;margin:12px auto 8px;aspect-ratio:1600/700;border-radius:22px;overflow:hidden;background:#eef3f8;touch-action:pan-y}
@@ -33,9 +30,6 @@ html[data-theme=dark] .vg-hero{background:transparent;border-radius:0}
 html[data-theme=dark] .vg-slide .vg-d{display:block}
 html[data-theme=dark] .vg-slide .vg-d~.vg-l{display:none}
 @media (max-width:400px){.vg-nav{width:28px;height:28px;font-size:16px}}
-.vg-promo{position:absolute;inset-inline-start:18px;bottom:18px;z-index:5;background:#052e45;color:#fff;border-radius:12px;padding:8px 14px;font-weight:700;font-size:15px;box-shadow:0 4px 14px rgba(0,0,0,.25);pointer-events:none}
-.vg-promo b{color:#05b3e9;letter-spacing:1px;margin-inline-start:6px}
-@media (max-width:600px){.vg-promo{inset-inline-start:10px;bottom:10px;font-size:13px;padding:6px 10px}}
 </style>
 <section class="vg-hero" id="vgHero" aria-roledescription="carousel" aria-label="عروض Vision Guard">
 <?php foreach ($vg_slides as $i => $s):
@@ -52,9 +46,6 @@ html[data-theme=dark] .vg-slide .vg-d~.vg-l{display:none}
     <img class="vg-l" src="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars((string)$s['alt'], ENT_QUOTES, 'UTF-8') ?>" width="1600" height="700"<?= $i === 0 ? ' fetchpriority="high"' : ' loading="lazy"' ?>>
   </<?= $tag ?>>
 <?php endforeach; ?>
-<?php if ($vg_promo): ?>
-  <div class="vg-promo"><span>كود الخصم</span><b dir="ltr"><?= htmlspecialchars((string)$vg_promo['code'], ENT_QUOTES, 'UTF-8') ?></b></div>
-<?php endif; ?>
 <?php if ($vg_n > 1): ?>
   <button type="button" class="vg-nav vg-prev" aria-label="<?php echo (isset($vgEn)&&$vgEn)?'Previous':'السابق'; ?>">&lsaquo;</button>
   <button type="button" class="vg-nav vg-next" aria-label="<?php echo (isset($vgEn)&&$vgEn)?'Next':'التالي'; ?>">&rsaquo;</button>
