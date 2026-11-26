@@ -2,42 +2,42 @@
   "/": {
     "status": 200,
     "loc": "",
-    "hash": "9db131250b3a"
+    "hash": "914ed328bcc1"
   },
   "/shop": {
     "status": 200,
     "loc": "",
-    "hash": "501b0de795c6"
+    "hash": "5dc3286d591c"
   },
   "/planner": {
     "status": 200,
     "loc": "",
-    "hash": "7c5bbfefcd75"
+    "hash": "fbfc938a28ec"
   },
   "/about": {
     "status": 200,
     "loc": "",
-    "hash": "96a370c87ee7"
+    "hash": "36e3c53dbdb1"
   },
   "/faq": {
     "status": 200,
     "loc": "",
-    "hash": "a832a07882ce"
+    "hash": "aca4bd675ab0"
   },
   "/contact": {
     "status": 200,
     "loc": "",
-    "hash": "7f6f106bc418"
+    "hash": "9188829d0177"
   },
   "/cart": {
     "status": 200,
     "loc": "",
-    "hash": "6361c998227e"
+    "hash": "f80de56bda61"
   },
   "/account": {
     "status": 200,
     "loc": "",
-    "hash": "0bf882c3f1bc"
+    "hash": "688efa0dc1f0"
   },
   "/category.php?c=cameras": {
     "status": 404,
@@ -117,12 +117,12 @@
   "/admin/dashboard.php": {
     "status": 200,
     "loc": "",
-    "hash": "d8c1125ad4e9"
+    "hash": "62623783184c"
   },
   "/admin/index.php": {
     "status": 200,
     "loc": "",
-    "hash": "0352f4961064"
+    "hash": "0f9b717b3b18"
   },
   "/admin/products.php": {
     "status": 200,
