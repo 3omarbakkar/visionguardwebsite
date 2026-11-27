@@ -56,8 +56,9 @@ $avgPrev = (int)($perPrev['c'] ?? 0) > 0 ? (float)$perPrev['s'] / (int)$perPrev[
 $today = vgd_p1($sumSql, [$todayD, $to]);
 
 $pending = vgd_one("SELECT COUNT(*) c FROM leads WHERE type = 'order' AND status = 'new'");
-$byStatus = [];
-foreach (vgd_p("SELECT status, COUNT(*) c FROM leads WHERE type = 'order' AND created_at >= ? AND created_at < ? GROUP BY status", $cur) as $row) { $byStatus[$row['status']] = (int)$row['c']; }
+$byStatus = []; $byStatusSum = [];
+foreach (vgd_p("SELECT status, COUNT(*) c, COALESCE(SUM(total),0) s FROM leads WHERE type = 'order' AND created_at >= ? AND created_at < ? GROUP BY status", $cur) as $row) { $byStatus[$row['status']] = (int)$row['c']; $byStatusSum[$row['status']] = (float)$row['s']; }
+$pipeTotal = array_sum($byStatus);
 $low = vgd_one("SELECT COUNT(*) c FROM products WHERE in_stock = 1 AND stock_qty IS NOT NULL AND stock_qty <= 3");
 $lowList = vgd_all("SELECT id, name_ar, stock_qty FROM products WHERE in_stock = 1 AND stock_qty IS NOT NULL AND stock_qty <= 3 ORDER BY stock_qty ASC LIMIT 8");
 $cust = vgd_one("SELECT COUNT(*) c FROM customers");
@@ -185,6 +186,17 @@ $pct = function ($n) use ($pf) { return $pf['total'] > 0 ? round($n / $pf['total
 .kval .dlt{font-size:12px !important;line-height:20px;font-weight:700}
 .kpi.hero .dlt{background:rgba(255,255,255,.2);color:#fff}
 .bars.dense{gap:3px}.bars.dense .bar>span:first-child{display:none}.bars.dense .bar>span:last-child{visibility:hidden}.bars.dense .bar:nth-child(5n+1)>span:last-child{visibility:visible}
+.pipe{display:flex;flex-direction:column;gap:12px}
+.pstage{display:flex;flex-direction:column;gap:5px}
+.pst{display:grid;grid-template-columns:1fr auto 44px;align-items:center;gap:8px}
+.pst b{font-variant-numeric:tabular-nums;font-size:15px}
+.pst .badge{justify-self:start}
+.pst small{color:var(--muted);font-size:12px;text-align:end}
+.ptr{height:8px;background:#eef2f7;border-radius:99px;overflow:hidden}
+.ptr i{display:block;height:100%;border-radius:99px;background:#05b3e9}
+.ptr i.delivered{background:#16a34a}.ptr i.closed{background:#6366f1}.ptr i.cancelled{background:#dc2626}.ptr i.contacted{background:#d97706}.ptr i.new{background:#2563eb}
+.pv{color:var(--muted);font-size:12px}
+html[data-theme="dark"] body .ptr{background:rgba(255,255,255,.08)}
 .funnel{display:flex;flex-direction:column;gap:8px;margin:4px 0 12px}
 .fstep{display:grid;grid-template-columns:120px 1fr 44px;align-items:center;gap:10px;font-size:13.5px}
 .fstep .tr{height:12px;background:#eef2f7;border-radius:99px;overflow:hidden}
@@ -326,10 +338,16 @@ html[data-theme="dark"] body .late{color:#f87171}
     </div>
   </div>
   <div class="card">
-    <div class="ch"><h3>حالة الطلبات</h3><span>طلبات الفترة</span></div>
-    <?php foreach ($labels as $k => $lb): ?>
-      <div class="srow"><span class="badge <?= $k ?>"><?= $lb ?></span><b><?= (int)($byStatus[$k] ?? 0) ?></b></div>
+    <div class="ch"><h3>خط الطلبات</h3><span><?= vgd_h($rangeOpts[$r]) ?></span></div>
+    <div class="pipe">
+    <?php foreach ($labels as $k => $lb): $n = (int)($byStatus[$k] ?? 0); $v = (float)($byStatusSum[$k] ?? 0); $sh = $pipeTotal > 0 ? round($n / $pipeTotal * 100) : 0; ?>
+      <div class="pstage">
+        <div class="pst"><span class="badge <?= $k ?>"><?= $lb ?></span><b><?= $n ?></b><small><?= $sh ?>%</small></div>
+        <div class="ptr"><i class="<?= $k ?>" style="width:<?= $sh ?>%"></i></div>
+        <small class="pv"><?= $v > 0 ? number_format($v, 0) . ' ج.م' : '—' ?></small>
+      </div>
     <?php endforeach; ?>
+    </div>
   </div>
   <div class="card tw">
     <div class="ch"><h3>الأكثر مبيعاً</h3><span><?= vgd_h($rangeOpts[$r]) ?></span></div>
