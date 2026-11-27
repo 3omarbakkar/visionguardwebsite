@@ -1,17 +1,28 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/perms.php'; require_perm('leads');
+require_once __DIR__ . '/includes/crm.php';
 function vgl_h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
 $status = (string)($_GET['status'] ?? '');
 $q = trim((string)($_GET['q'] ?? ''));
+$crm = vg_crm_ready();
+$type = (string)($_GET['type'] ?? '');
+if ($type !== 'prospects') $type = '';
+$fFollow = $crm && (string)($_GET['f'] ?? '') === 'followups';
 $sql = 'SELECT * FROM leads WHERE 1=1';
 $params = [];
-if ($status === 'all') { /* every order */ }
+if ($type === 'prospects') { $sql .= " AND type IN ('coverage_plan','contact')"; }
+if ($fFollow) {
+    // Follow-ups due today or missed, soonest first, whatever their status.
+    $sql .= ' AND followup_at IS NOT NULL AND followup_at < ?'; $params[] = date('Y-m-d', strtotime(vg_db_today() . ' +1 day'));
+    if ($status !== '' && $status !== 'all') { $sql .= ' AND status = ?'; $params[] = $status; }
+}
+elseif ($status === 'all') { /* every order */ }
 elseif ($status !== '') { $sql .= ' AND status = ?'; $params[] = $status; }
 else { $sql .= " AND status <> 'delivered'"; }
 if ($q !== '') { $sql .= ' AND (name LIKE ? OR phone LIKE ? OR message LIKE ?)'; $like = '%' . $q . '%'; array_push($params, $like, $like, $like); }
-$sql .= ' ORDER BY created_at DESC LIMIT 300';
+$sql .= $fFollow ? ' ORDER BY followup_at ASC LIMIT 300' : ' ORDER BY created_at DESC LIMIT 300';
 $stmt = db()->prepare($sql);
 $stmt->execute($params);
 $leads = $stmt->fetchAll();
@@ -67,22 +78,43 @@ require __DIR__ . '/includes/layout_top.php';
 .oc-f form{margin:0}
 .pay{font-size:13px}
 .pay b{display:block}
+.vg-views a{background:#f8fafc}
+.vg-fu{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px;padding:10px 18px;border-top:1px solid #eef1f5;margin:0}
+.vg-fu label{display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:var(--muted)}
+.vg-fu label.grow{flex:1;min-width:200px}
+.vg-fu input{font-size:13px;padding:6px 8px}
+.vg-fu.set{background:#f0f9ff}.vg-fu.late{background:#fef2f2}
+.fu-late{color:#b91c1c;font-weight:700;font-size:12.5px;align-self:center}
+html[data-theme="dark"] body .vg-fu{border-color:var(--fx-line,#3a3d52)}
+html[data-theme="dark"] body .vg-fu.set{background:rgba(5,179,233,.08)}html[data-theme="dark"] body .vg-fu.late{background:rgba(239,68,68,.08)}
+html[data-theme="dark"] body .fu-late{color:#f87171}
 </style>
 <div class="topbar">
   <h2>الطلبات والرسائل (<?= count($leads) ?>)</h2>
   <form method="get" class="sbar">
     <?php if ($status !== ''): ?><input type="hidden" name="status" value="<?= vgl_h($status) ?>"><?php endif; ?>
+    <?php if ($type !== ''): ?><input type="hidden" name="type" value="<?= vgl_h($type) ?>"><?php endif; ?>
+    <?php if ($fFollow): ?><input type="hidden" name="f" value="followups"><?php endif; ?>
     <input type="text" name="q" value="<?= vgl_h($q) ?>" placeholder="ابحث بالاسم أو الموبايل أو العنوان">
     <button class="btn sm" type="submit">بحث</button>
   </form>
 </div>
+<?php if ($crm || $type): ?>
+<div class="vg-tabs vg-views">
+  <a class="<?= !$type && !$fFollow ? 'on' : '' ?>" href="leads.php">كل الطلبات والرسائل</a>
+  <a class="<?= $type === 'prospects' ? 'on' : '' ?>" href="leads.php?type=prospects">العملاء المحتملين</a>
+  <?php if ($crm): ?><a class="<?= $fFollow ? 'on' : '' ?>" href="leads.php?f=followups">متابعات النهارده</a><?php endif; ?>
+</div>
+<?php endif; ?>
+<?php if (!$fFollow): ?>
 <div class="vg-tabs">
-<?php foreach ($tabs as $tb): $on = ($status === $tb[0]); $href = $tb[0] === '' ? 'leads.php' : 'leads.php?status=' . $tb[0]; ?>
+<?php foreach ($tabs as $tb): $on = ($status === $tb[0]); $href = 'leads.php?' . http_build_query(array_filter(['type' => $type, 'status' => $tb[0]], 'strlen')); $href = rtrim($href, '?'); ?>
   <a class="<?= $on ? 'on' : '' ?>" href="<?= $href ?>"><?= vgl_h($tb[1]) ?> <b><?= (int)($counts[$tb[2]] ?? 0) ?></b></a>
 <?php endforeach; ?>
 </div>
+<?php endif; ?>
 <?php if (!$leads): ?>
-<div class="card"><p style="color:var(--muted);margin:0"><?= $status === '' ? 'مفيش طلبات حالية. الطلبات المتسلّمة بتظهر في "عرض الكل".' : 'مفيش طلبات في القسم ده.' ?></p></div>
+<div class="card"><p style="color:var(--muted);margin:0"><?= $fFollow ? 'مفيش متابعات النهارده.' : ($status === '' ? 'مفيش طلبات حالية. الطلبات المتسلّمة بتظهر في "عرض الكل".' : 'مفيش طلبات في القسم ده.') ?></p></div>
 <?php endif; ?>
 <style>.vgqs{display:inline-flex;margin:0}.vgqs select{padding:6px 10px;border-radius:10px;border:1px solid #e1e8f1;background:#fff;font:inherit;font-size:13px;color:#0f1b2d;cursor:pointer}</style>
 <?php foreach ($leads as $l):
@@ -97,7 +129,7 @@ require __DIR__ . '/includes/layout_top.php';
     if ($wa !== '' && $wa[0] === '0') $wa = substr($wa, 1);
     $payState = (string)($l['payment_status'] ?? 'unverified');
 ?>
-<div class="oc s-<?= vgl_h($st) ?>">
+<div class="oc s-<?= vgl_h($st) ?>" id="l<?= (int)$l['id'] ?>">
   <div class="oc-h">
     <div>
       <div class="oc-t">
@@ -146,6 +178,16 @@ require __DIR__ . '/includes/layout_top.php';
     </div>
     <?php endif; ?>
   </div>
+  <?php endif; ?>
+  <?php if ($crm && can('leads_status')): $fuAt = (string)($l['followup_at'] ?? ''); $fuDate = $fuAt !== '' ? substr($fuAt, 0, 10) : ''; $fuLate = $fuDate !== '' && $fuDate < vg_db_today(); ?>
+  <form method="post" action="lead_update.php" class="vg-fu<?= $fuDate !== '' ? ($fuLate ? ' late' : ' set') : '' ?>">
+    <?= csrf_field() ?><input type="hidden" name="id" value="<?= (int)$l['id'] ?>"><input type="hidden" name="followup" value="1">
+    <label>ميعاد المتابعة<input type="date" name="followup_at" value="<?= vgl_h($fuDate) ?>"></label>
+    <label class="grow">ملاحظة<input type="text" name="followup_note" maxlength="500" value="<?= vgl_h($l['followup_note'] ?? '') ?>" placeholder="مثلاً: عايز 8 كاميرات، كلّمه بعد الجمعة"></label>
+    <button class="btn sm" type="submit">حفظ</button>
+    <?php if ($fuDate !== ''): ?><button class="btn sm secondary" type="submit" name="followup_done" value="1" title="شيل ميعاد المتابعة وسيب الملاحظة">تمت المتابعة</button><?php endif; ?>
+    <?php if ($fuLate): ?><span class="fu-late">متأخرة من <?= vgl_h(date('d/m', strtotime($fuAt))) ?></span><?php endif; ?>
+  </form>
   <?php endif; ?>
   <div class="oc-f">
     <?php if ($isOrder): ?>

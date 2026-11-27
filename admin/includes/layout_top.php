@@ -549,7 +549,7 @@ main{color:#0f1b2d}
 </style>
 <?php $vgNames = []; try { $vgNames = db()->query('SELECT name_ar, name_en FROM products WHERE name_ar <> "" AND name_en <> ""')->fetchAll(PDO::FETCH_KEY_PAIR); } catch (Throwable $e) { $vgNames = []; } ?>
 <script>window.VG_NAMES=<?= json_encode($vgNames, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;</script>
-<script src="assets/i18n.js?v=20261120"></script>
+<script src="assets/i18n.js?v=20261127"></script>
 <link rel="stylesheet" href="assets/flutter-theme.css?v=1">
 </head>
 <body>
