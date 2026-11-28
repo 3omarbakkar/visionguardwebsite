@@ -264,6 +264,9 @@ html[data-theme="dark"] body .late{color:#f87171}
   </div>
   <span class="cmp">النسب مقارنة <?= vgd_h($cmpLabel[$r]) ?></span>
 </div>
+<?php if ((!$crm || !$proj) && can('db_update')): ?>
+<div class="stale" style="margin:0 0 14px"><?= vgd_ic($P['alert'], 'kic') ?><span>فيه تحديث بسيط لقاعدة البيانات مطلوب عشان المتابعات ومراحل المشروع تشتغل. <a href="migrate.php"><b>افتح صفحة التحديث</b></a></span></div>
+<?php endif; ?>
 <div class="kpis">
   <div class="kpi card hero">
     <div class="kpi-top"><span class="kpi-label">المبيعات (<?= vgd_h($rangeOpts[$r]) ?>)</span><span class="kchip"><?= vgd_ic($P['cash']) ?></span></div>
