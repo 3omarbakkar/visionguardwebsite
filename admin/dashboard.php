@@ -92,16 +92,17 @@ $recent = vgd_all("SELECT id, name, phone, total, status, created_at FROM leads 
 $crm = vg_crm_ready();
 $canContact = can('customer_contact');
 $dbNow = vg_db_now();
-$pros = vgd_p("SELECT id, type, name, phone, status, created_at" . ($crm ? ', contacted_at, followup_at' : '') . " FROM leads WHERE $prospectTypes AND created_at >= ? AND created_at < ? ORDER BY created_at DESC", $cur);
+$proj = vg_projects_ready();
+$pros = vgd_p("SELECT id, type, name, phone, status, created_at" . ($crm ? ', contacted_at, followup_at' : '') . ($proj ? ', project_stage, quote_value' : '') . " FROM leads WHERE $prospectTypes AND created_at >= ? AND created_at < ? ORDER BY created_at DESC", $cur);
 $prosPrev = vgd_p1("SELECT COUNT(*) c FROM leads WHERE $prospectTypes AND created_at >= ? AND created_at < ?", $prev);
 $orderAt = [];   // phone key => latest non-cancelled order time, to see which prospects went on to order
 foreach (vgd_p("SELECT phone, created_at FROM leads WHERE $ok AND created_at >= ?", [$from]) as $ord) { $k = vg_phone_key($ord['phone']); if ($k !== '' && (!isset($orderAt[$k]) || $ord['created_at'] > $orderAt[$k])) $orderAt[$k] = $ord['created_at']; }
 $pf = ['total' => count($pros), 'coverage_plan' => 0, 'contact' => 0, 'replied' => 0, 'won' => 0, 'waiting' => 0];
 $respSum = 0; $respN = 0;
 // Prospect pipeline: each prospect sits in exactly one stage. "survey" counts the site-survey (coverage plan) requests in it.
-$stageKeys = ['new', 'contacted', 'followup', 'won', 'lost'];
-$stage = []; $stageSurvey = [];
-foreach ($stageKeys as $sk) { $stage[$sk] = 0; $stageSurvey[$sk] = 0; }
+$stageKeys = $proj ? ['new', 'contacted', 'followup', 'survey', 'quote', 'install', 'won', 'lost'] : ['new', 'contacted', 'followup', 'won', 'lost'];
+$stage = []; $stageSurvey = []; $stageVal = [];
+foreach ($stageKeys as $sk) { $stage[$sk] = 0; $stageSurvey[$sk] = 0; $stageVal[$sk] = 0.0; }
 $stale = 0;   // replied to, nothing scheduled, and quiet for over 7 days
 foreach ($pros as $pr) {
     $pf[$pr['type']] = ($pf[$pr['type']] ?? 0) + 1;
@@ -110,8 +111,10 @@ foreach ($pros as $pr) {
     $isWon = $k !== '' && isset($orderAt[$k]) && $orderAt[$k] >= $pr['created_at'];
     if ($isWon) $pf['won']++;
     if ($crm && !empty($pr['contacted_at'])) { $dt = strtotime($pr['contacted_at']) - strtotime($pr['created_at']); if ($dt >= 0) { $respSum += $dt; $respN++; } }
-    if ($isWon) $stg = 'won';
+    $ps = $proj ? (string)($pr['project_stage'] ?? '') : '';
+    if ($isWon || $ps === 'done') $stg = 'won';
     elseif (in_array($pr['status'], ['closed', 'cancelled'], true)) $stg = 'lost';
+    elseif (in_array($ps, ['survey', 'quote', 'install'], true)) $stg = $ps;
     elseif ($pr['status'] === 'new') $stg = 'new';
     elseif (!empty($pr['followup_at'])) $stg = 'followup';
     else {
@@ -121,6 +124,7 @@ foreach ($pros as $pr) {
     }
     $stage[$stg]++;
     if ($pr['type'] === 'coverage_plan') $stageSurvey[$stg]++;
+    if ($proj && $pr['quote_value'] !== null) $stageVal[$stg] += (float)$pr['quote_value'];
 }
 $waitList = vgd_all("SELECT id, type, name, phone, created_at FROM leads WHERE $prospectTypes AND status = 'new' ORDER BY created_at ASC LIMIT 5");
 $waitAll = vgd_one("SELECT COUNT(*) c FROM leads WHERE $prospectTypes AND status = 'new'");
@@ -143,8 +147,9 @@ $nLow = (int)($low['c'] ?? 0);
 $nNew = (int)($pending['c'] ?? 0);
 $nWait = (int)($waitAll['c'] ?? 0);
 $typeLabels = ['coverage_plan' => 'مخطط تغطية', 'contact' => 'رسالة تواصل', 'order' => 'طلب'];
-$stageLabels = ['new' => 'مستني رد', 'contacted' => 'تم التواصل', 'followup' => 'متابعة محددة', 'won' => 'اتحوّل لطلب', 'lost' => 'مقفول / ملغي'];
-$stageBadge = ['new' => 'new', 'contacted' => 'contacted', 'followup' => 'followup', 'won' => 'delivered', 'lost' => 'cancelled'];
+$stageLabels = ['new' => 'مستني رد', 'contacted' => 'تم التواصل', 'followup' => 'متابعة محددة', 'survey' => 'معاينة', 'quote' => 'عرض سعر', 'install' => 'تركيب', 'won' => $proj ? 'اتحوّل لطلب / اتركّب' : 'اتحوّل لطلب', 'lost' => 'مقفول / ملغي'];
+$stageLabels = array_intersect_key($stageLabels, array_flip($stageKeys));
+$stageBadge = ['new' => 'new', 'contacted' => 'contacted', 'followup' => 'followup', 'survey' => 'survey', 'quote' => 'quote', 'install' => 'install', 'won' => 'delivered', 'lost' => 'cancelled'];
 $pct = function ($n) use ($pf) { return $pf['total'] > 0 ? round($n / $pf['total'] * 100) : 0; };
 ?>
 <style>
@@ -176,6 +181,8 @@ $pct = function ($n) use ($pf) { return $pf['total'] > 0 ? round($n / $pf['total
 .badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;background:#e5e7eb;color:#374151}
 .badge.new{background:#dbeafe;color:#1e40af}.badge.contacted{background:#fef3c7;color:#92400e}
 .badge.followup{background:#ece9fd;color:#5b46d6}
+.badge.survey{background:#e0f6fd;color:#0a8fb8}.badge.quote{background:#fce7f3;color:#9d174d}.badge.install{background:#e0e7ff;color:#3730a3}
+a.badge{text-decoration:none}
 .badge.delivered{background:#dcfce7;color:#166534}.badge.closed{background:#e0e7ff;color:#3730a3}.badge.cancelled{background:#fee2e2;color:#991b1b}
 .srow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eef1f5}
 .srow:last-child{border-bottom:0}
@@ -214,7 +221,8 @@ $pct = function ($n) use ($pf) { return $pf['total'] > 0 ? round($n / $pf['total
 .pst small{color:var(--muted);font-size:12px;text-align:end}
 .ptr{height:8px;background:#eef2f7;border-radius:99px;overflow:hidden}
 .ptr i{display:block;height:100%;border-radius:99px;background:#05b3e9}
-.ptr i.followup{background:#7c3aed}
+.ptr i.followup{background:#7c3aed}.ptr i.survey{background:#05b3e9}.ptr i.quote{background:#db2777}.ptr i.install{background:#6366f1}
+html[data-theme="dark"] body .badge.survey{background:rgba(5,179,233,.18);color:#7dd3fc}html[data-theme="dark"] body .badge.quote{background:rgba(219,39,119,.2);color:#f9a8d4}html[data-theme="dark"] body .badge.install{background:rgba(99,102,241,.22);color:#a5b4fc}
 .stale{display:flex;align-items:center;gap:8px;margin-top:12px;padding:9px 12px;border-radius:10px;background:#fdf1dc;color:#92400e;font-size:13px}
 html[data-theme="dark"] body .stale{background:rgba(217,119,6,.15);color:#fbbf24}
 html[data-theme="dark"] body .badge.followup{background:rgba(124,58,237,.2);color:#c4b5fd}
@@ -327,9 +335,10 @@ html[data-theme="dark"] body .late{color:#f87171}
     <div class="pipe">
     <?php foreach ($stageLabels as $sk => $sl): $n = $stage[$sk]; $sh = $pct($n); ?>
       <div class="pstage">
-        <div class="pst"><span class="badge <?= $stageBadge[$sk] ?>"><?= vgd_h($sl) ?></span><b><?= $n ?></b><small><?= $sh ?>%</small></div>
+        <?php $isPs = in_array($sk, ['survey', 'quote', 'install'], true); ?>
+        <div class="pst"><?php if ($isPs): ?><a class="badge <?= $stageBadge[$sk] ?>" href="leads.php?type=prospects&amp;stage=<?= $sk ?>"><?= vgd_h($sl) ?></a><?php else: ?><span class="badge <?= $stageBadge[$sk] ?>"><?= vgd_h($sl) ?></span><?php endif; ?><b><?= $n ?></b><small><?= $sh ?>%</small></div>
         <div class="ptr"><i class="<?= $sk === 'won' ? 'delivered' : ($sk === 'lost' ? 'cancelled' : $sk) ?>" style="width:<?= $sh ?>%"></i></div>
-        <small class="pv"><?= $stageSurvey[$sk] ? 'منهم ' . $stageSurvey[$sk] . ' طلب معاينة' : '—' ?></small>
+        <small class="pv"><?= $stageSurvey[$sk] ? 'منهم ' . $stageSurvey[$sk] . ' طلب معاينة' : '—' ?><?= $stageVal[$sk] > 0 ? ' · ' . number_format($stageVal[$sk], 0) . ' ج.م' : '' ?></small>
       </div>
     <?php endforeach; ?>
     </div>

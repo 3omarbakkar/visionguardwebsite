@@ -10,9 +10,14 @@ $crm = vg_crm_ready();
 $type = (string)($_GET['type'] ?? '');
 if ($type !== 'prospects') $type = '';
 $fFollow = $crm && (string)($_GET['f'] ?? '') === 'followups';
+$projReady = vg_projects_ready();
+$projStages = vg_project_stages();
+$stageF = $projReady ? (string)($_GET['stage'] ?? '') : '';
+if (!isset($projStages[$stageF])) $stageF = '';
 $sql = 'SELECT * FROM leads WHERE 1=1';
 $params = [];
 if ($type === 'prospects') { $sql .= " AND type IN ('coverage_plan','contact')"; }
+if ($stageF !== '') { $sql .= ' AND project_stage = ?'; $params[] = $stageF; }
 if ($fFollow) {
     // Follow-ups due today or missed, soonest first, whatever their status.
     $sql .= ' AND followup_at IS NOT NULL AND followup_at < ?'; $params[] = date('Y-m-d', strtotime(vg_db_today() . ' +1 day'));
@@ -20,7 +25,7 @@ if ($fFollow) {
 }
 elseif ($status === 'all') { /* every order */ }
 elseif ($status !== '') { $sql .= ' AND status = ?'; $params[] = $status; }
-else { $sql .= " AND status <> 'delivered'"; }
+elseif ($stageF === '') { $sql .= " AND status <> 'delivered'"; }
 if ($q !== '') { $sql .= ' AND (name LIKE ? OR phone LIKE ? OR message LIKE ?)'; $like = '%' . $q . '%'; array_push($params, $like, $like, $like); }
 $sql .= $fFollow ? ' ORDER BY followup_at ASC LIMIT 300' : ' ORDER BY created_at DESC LIMIT 300';
 $stmt = db()->prepare($sql);
@@ -138,6 +143,7 @@ html[data-theme="dark"] body .fu-late{color:#f87171}
         <?php else: ?><span class="oc-name"><?= vgl_h($l['name'] ?: '—') ?></span><?php endif; ?>
         <span class="tag"><?= vgl_h($labels[$l['type']] ?? $l['type']) ?></span>
         <span class="tag <?= vgl_h($st) ?>"><?= vgl_h($statusLabels[$st] ?? $st) ?></span>
+        <?php if ($projReady && !$isOrder && !empty($l['project_stage']) && isset($projStages[$l['project_stage']])): ?><span class="tag" title="مرحلة المشروع">المشروع: <?= vgl_h($projStages[$l['project_stage']]) ?></span><?php endif; ?>
         <?php if (!empty($l['customer_id'])): ?><span class="tag" title="طلب من حساب عميل مسجّل">عميل مسجّل</span><?php endif; ?>
         <?php if (!empty($l['traffic_src'])): $tsl=['facebook'=>'فيسبوك/إنستغرام','tiktok'=>'تيك توك','whatsapp'=>'واتساب','google'=>'جوجل','direct'=>'مباشر','other'=>'موقع آخر']; ?><span class="tag" title="مصدر الزيارة">المصدر: <?= vgl_h($tsl[$l['traffic_src']] ?? $l['traffic_src']) ?></span><?php endif; ?>
       </div>
@@ -187,6 +193,19 @@ html[data-theme="dark"] body .fu-late{color:#f87171}
     <button class="btn sm" type="submit">حفظ</button>
     <?php if ($fuDate !== ''): ?><button class="btn sm secondary" type="submit" name="followup_done" value="1" title="شيل ميعاد المتابعة وسيب الملاحظة">تمت المتابعة</button><?php endif; ?>
     <?php if ($fuLate): ?><span class="fu-late">متأخرة من <?= vgl_h(date('d/m', strtotime($fuAt))) ?></span><?php endif; ?>
+  </form>
+  <?php endif; ?>
+  <?php if ($projReady && !$isOrder && can('leads_status')): $ps = (string)($l['project_stage'] ?? ''); ?>
+  <form method="post" action="lead_update.php" class="vg-fu<?= $ps !== '' ? ' set' : '' ?>">
+    <?= csrf_field() ?><input type="hidden" name="id" value="<?= (int)$l['id'] ?>"><input type="hidden" name="project" value="1">
+    <label>مرحلة المشروع
+      <select name="project_stage">
+        <option value="">— لسه ما بدأش —</option>
+        <?php foreach ($projStages as $pk => $pl): ?><option value="<?= $pk ?>"<?= $ps === $pk ? ' selected' : '' ?>><?= vgl_h($pl) ?></option><?php endforeach; ?>
+      </select>
+    </label>
+    <label>قيمة عرض السعر (ج.م)<input type="number" name="quote_value" min="0" step="1" inputmode="numeric" value="<?= $l['quote_value'] !== null && $l['quote_value'] !== '' ? vgl_h((int)round((float)$l['quote_value'])) : '' ?>"></label>
+    <button class="btn sm" type="submit">حفظ</button>
   </form>
   <?php endif; ?>
   <div class="oc-f">

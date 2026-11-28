@@ -117,7 +117,7 @@
   "/admin/dashboard.php": {
     "status": 200,
     "loc": "",
-    "hash": "b4d99b4d6b04"
+    "hash": "f8b679591a51"
   },
   "/admin/index.php": {
     "status": 200,
@@ -142,7 +142,7 @@
   "/admin/leads.php": {
     "status": 200,
     "loc": "",
-    "hash": "288ca6196d31"
+    "hash": "8b933b5769ab"
   },
   "/admin/customers.php": {
     "status": 200,
