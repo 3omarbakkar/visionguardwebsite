@@ -91,22 +91,39 @@ $recent = vgd_all("SELECT id, name, phone, total, status, created_at FROM leads 
 // Prospects: coverage-plan requests and contact messages (the leads that are not orders yet).
 $crm = vg_crm_ready();
 $canContact = can('customer_contact');
-$pros = vgd_p("SELECT id, type, name, phone, status, created_at" . ($crm ? ', contacted_at' : '') . " FROM leads WHERE $prospectTypes AND created_at >= ? AND created_at < ? ORDER BY created_at DESC", $cur);
+$dbNow = vg_db_now();
+$pros = vgd_p("SELECT id, type, name, phone, status, created_at" . ($crm ? ', contacted_at, followup_at' : '') . " FROM leads WHERE $prospectTypes AND created_at >= ? AND created_at < ? ORDER BY created_at DESC", $cur);
 $prosPrev = vgd_p1("SELECT COUNT(*) c FROM leads WHERE $prospectTypes AND created_at >= ? AND created_at < ?", $prev);
 $orderAt = [];   // phone key => latest non-cancelled order time, to see which prospects went on to order
-foreach (vgd_p("SELECT phone, created_at FROM leads WHERE $ok AND created_at >= ?", [$from]) as $o) { $k = vg_phone_key($o['phone']); if ($k !== '' && (!isset($orderAt[$k]) || $o['created_at'] > $orderAt[$k])) $orderAt[$k] = $o['created_at']; }
+foreach (vgd_p("SELECT phone, created_at FROM leads WHERE $ok AND created_at >= ?", [$from]) as $ord) { $k = vg_phone_key($ord['phone']); if ($k !== '' && (!isset($orderAt[$k]) || $ord['created_at'] > $orderAt[$k])) $orderAt[$k] = $ord['created_at']; }
 $pf = ['total' => count($pros), 'coverage_plan' => 0, 'contact' => 0, 'replied' => 0, 'won' => 0, 'waiting' => 0];
 $respSum = 0; $respN = 0;
+// Prospect pipeline: each prospect sits in exactly one stage. "survey" counts the site-survey (coverage plan) requests in it.
+$stageKeys = ['new', 'contacted', 'followup', 'won', 'lost'];
+$stage = []; $stageSurvey = [];
+foreach ($stageKeys as $sk) { $stage[$sk] = 0; $stageSurvey[$sk] = 0; }
+$stale = 0;   // replied to, nothing scheduled, and quiet for over 7 days
 foreach ($pros as $pr) {
     $pf[$pr['type']] = ($pf[$pr['type']] ?? 0) + 1;
     if ($pr['status'] === 'new') $pf['waiting']++; else $pf['replied']++;
     $k = vg_phone_key($pr['phone']);
-    if ($k !== '' && isset($orderAt[$k]) && $orderAt[$k] >= $pr['created_at']) $pf['won']++;
+    $isWon = $k !== '' && isset($orderAt[$k]) && $orderAt[$k] >= $pr['created_at'];
+    if ($isWon) $pf['won']++;
     if ($crm && !empty($pr['contacted_at'])) { $dt = strtotime($pr['contacted_at']) - strtotime($pr['created_at']); if ($dt >= 0) { $respSum += $dt; $respN++; } }
+    if ($isWon) $stg = 'won';
+    elseif (in_array($pr['status'], ['closed', 'cancelled'], true)) $stg = 'lost';
+    elseif ($pr['status'] === 'new') $stg = 'new';
+    elseif (!empty($pr['followup_at'])) $stg = 'followup';
+    else {
+        $stg = 'contacted';
+        $since = strtotime((string)(($pr['contacted_at'] ?? '') ?: $pr['created_at']));
+        if ($since && $dbNow - $since > 7 * 86400) $stale++;
+    }
+    $stage[$stg]++;
+    if ($pr['type'] === 'coverage_plan') $stageSurvey[$stg]++;
 }
 $waitList = vgd_all("SELECT id, type, name, phone, created_at FROM leads WHERE $prospectTypes AND status = 'new' ORDER BY created_at ASC LIMIT 5");
 $waitAll = vgd_one("SELECT COUNT(*) c FROM leads WHERE $prospectTypes AND status = 'new'");
-$dbNow = vg_db_now();
 
 // Follow-ups due today or missed (needs migration-followups.sql).
 $fu = []; $fuAll = 0;
@@ -126,6 +143,8 @@ $nLow = (int)($low['c'] ?? 0);
 $nNew = (int)($pending['c'] ?? 0);
 $nWait = (int)($waitAll['c'] ?? 0);
 $typeLabels = ['coverage_plan' => 'مخطط تغطية', 'contact' => 'رسالة تواصل', 'order' => 'طلب'];
+$stageLabels = ['new' => 'مستني رد', 'contacted' => 'تم التواصل', 'followup' => 'متابعة محددة', 'won' => 'اتحوّل لطلب', 'lost' => 'مقفول / ملغي'];
+$stageBadge = ['new' => 'new', 'contacted' => 'contacted', 'followup' => 'followup', 'won' => 'delivered', 'lost' => 'cancelled'];
 $pct = function ($n) use ($pf) { return $pf['total'] > 0 ? round($n / $pf['total'] * 100) : 0; };
 ?>
 <style>
@@ -156,6 +175,7 @@ $pct = function ($n) use ($pf) { return $pf['total'] > 0 ? round($n / $pf['total
 .bar.zero i{background:#e2e8ef}
 .badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;background:#e5e7eb;color:#374151}
 .badge.new{background:#dbeafe;color:#1e40af}.badge.contacted{background:#fef3c7;color:#92400e}
+.badge.followup{background:#ece9fd;color:#5b46d6}
 .badge.delivered{background:#dcfce7;color:#166534}.badge.closed{background:#e0e7ff;color:#3730a3}.badge.cancelled{background:#fee2e2;color:#991b1b}
 .srow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eef1f5}
 .srow:last-child{border-bottom:0}
@@ -194,6 +214,10 @@ $pct = function ($n) use ($pf) { return $pf['total'] > 0 ? round($n / $pf['total
 .pst small{color:var(--muted);font-size:12px;text-align:end}
 .ptr{height:8px;background:#eef2f7;border-radius:99px;overflow:hidden}
 .ptr i{display:block;height:100%;border-radius:99px;background:#05b3e9}
+.ptr i.followup{background:#7c3aed}
+.stale{display:flex;align-items:center;gap:8px;margin-top:12px;padding:9px 12px;border-radius:10px;background:#fdf1dc;color:#92400e;font-size:13px}
+html[data-theme="dark"] body .stale{background:rgba(217,119,6,.15);color:#fbbf24}
+html[data-theme="dark"] body .badge.followup{background:rgba(124,58,237,.2);color:#c4b5fd}
 .ptr i.delivered{background:#16a34a}.ptr i.closed{background:#6366f1}.ptr i.cancelled{background:#dc2626}.ptr i.contacted{background:#d97706}.ptr i.new{background:#2563eb}
 .pv{color:var(--muted);font-size:12px}
 html[data-theme="dark"] body .ptr{background:rgba(255,255,255,.08)}
@@ -260,7 +284,7 @@ html[data-theme="dark"] body .late{color:#f87171}
   </a>
   <?php if ($crm): ?>
   <a class="kpi card <?= $fuAll ? 'on-alert t-red' : 't-cyan' ?>" href="leads.php?f=followups">
-    <div class="kpi-top"><span class="kpi-label">متابعات النهارده</span><span class="kchip <?= $fuAll ? 'red' : 'cyan' ?>"><?= vgd_ic($P['bell']) ?></span></div>
+    <div class="kpi-top"><span class="kpi-label">متابعات النهارده والمتأخرة</span><span class="kchip <?= $fuAll ? 'red' : 'cyan' ?>"><?= vgd_ic($P['bell']) ?></span></div>
     <div class="kval"><?= $fuAll ?></div>
     <div class="ksub"><?= $fuAll ? 'مكالمات ورسايل لازم تتعمل' : 'مفيش متابعات النهارده' ?></div>
   </a>
@@ -295,6 +319,23 @@ html[data-theme="dark"] body .late{color:#f87171}
     <p class="note-sm"><?= $pf['total'] ? 'نسبة التحويل <b>' . $pct($pf['won']) . '%</b>. بنعدّ العميل اتحوّل لو عمل طلب بنفس رقم الموبايل بعدها.' : '' ?><?= !$crm ? ' وقت الرد هيظهر بعد تفعيل المتابعات.' : '' ?></p>
     <?php else: ?>
       <div class="empty"><?= vgd_ic($P['target']) ?><p>مفيش طلبات معاينة أو رسايل تواصل في الفترة دي.</p></div>
+    <?php endif; ?>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>مراحل العملاء المحتملين</h3><span><?= vgd_h($rangeOpts[$r]) ?></span></div>
+    <?php if ($pf['total']): ?>
+    <div class="pipe">
+    <?php foreach ($stageLabels as $sk => $sl): $n = $stage[$sk]; $sh = $pct($n); ?>
+      <div class="pstage">
+        <div class="pst"><span class="badge <?= $stageBadge[$sk] ?>"><?= vgd_h($sl) ?></span><b><?= $n ?></b><small><?= $sh ?>%</small></div>
+        <div class="ptr"><i class="<?= $sk === 'won' ? 'delivered' : ($sk === 'lost' ? 'cancelled' : $sk) ?>" style="width:<?= $sh ?>%"></i></div>
+        <small class="pv"><?= $stageSurvey[$sk] ? 'منهم ' . $stageSurvey[$sk] . ' طلب معاينة' : '—' ?></small>
+      </div>
+    <?php endforeach; ?>
+    </div>
+    <?php if ($stale): ?><div class="stale"><?= vgd_ic($P['alert'], 'kic') ?><span><b><?= $stale ?></b> عميل اتردّ عليهم من أكتر من 7 أيام ومفيش ميعاد متابعة. حدّد لهم متابعة قبل ما يبردوا.</span></div><?php endif; ?>
+    <?php else: ?>
+      <div class="empty"><?= vgd_ic($P['target']) ?><p>مفيش عملاء محتملين في الفترة دي.</p></div>
     <?php endif; ?>
   </div>
   <div class="card tw">
@@ -375,13 +416,13 @@ html[data-theme="dark"] body .late{color:#f87171}
 <div class="card tw">
   <div class="ch"><h3>آخر الطلبات</h3><a class="btn sm secondary" href="leads.php?status=all">عرض الكل</a></div>
   <table><thead><tr><th>رقم الطلب</th><th>العميل</th><th>الإجمالي</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody>
-    <?php foreach ($recent as $r): ?>
+    <?php foreach ($recent as $ro): ?>
       <tr>
-        <td><a href="order.php?id=<?= (int)$r['id'] ?>">#<?= (int)$r['id'] ?></a></td>
-        <td><?= vgd_h($r['name']) ?></td>
-        <td><?= number_format((float)$r['total'], 0) ?> ج.م</td>
-        <td><span class="badge <?= vgd_h($r['status']) ?>"><?= vgd_h($labels[$r['status']] ?? $r['status']) ?></span></td>
-        <td><?= vgd_h(date('d/m/Y H:i', strtotime($r['created_at']))) ?></td>
+        <td><a href="order.php?id=<?= (int)$ro['id'] ?>">#<?= (int)$ro['id'] ?></a></td>
+        <td><?= vgd_h($ro['name']) ?></td>
+        <td><?= number_format((float)$ro['total'], 0) ?> ج.م</td>
+        <td><span class="badge <?= vgd_h($ro['status']) ?>"><?= vgd_h($labels[$ro['status']] ?? $ro['status']) ?></span></td>
+        <td><?= vgd_h(date('d/m/Y H:i', strtotime($ro['created_at']))) ?></td>
       </tr>
     <?php endforeach; ?>
     <?php if (!$recent): ?><tr><td colspan="5" style="color:var(--muted)">لسه مفيش طلبات. أول طلب هيظهر هنا تلقائياً.</td></tr><?php endif; ?>
