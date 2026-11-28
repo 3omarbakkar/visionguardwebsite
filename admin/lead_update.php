@@ -23,6 +23,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             db()->prepare('UPDATE leads SET followup_at = ?, followup_note = ? WHERE id = ?')->execute([$fd, $fn, $id]);
             flash_set(!empty($_POST['followup_done']) ? 'تمام، اتشالت المتابعة.' : ($fd ? 'اتحفظ ميعاد المتابعة.' : 'اتحفظت الملاحظة.'));
         }
+        if (!empty($_POST['project']) && vg_projects_ready()) {
+            // Site survey -> quote -> install, for prospects only. Moving into a stage means the lead was contacted.
+            $ps = (string)($_POST['project_stage'] ?? '');
+            $ps = isset(vg_project_stages()[$ps]) ? $ps : null;
+            $qv = str_replace(',', '', trim((string)($_POST['quote_value'] ?? '')));
+            $qv = ($qv !== '' && is_numeric($qv) && $qv >= 0 && $qv < 100000000) ? round((float)$qv, 2) : null;
+            db()->prepare("UPDATE leads SET project_stage = ?, quote_value = ? WHERE id = ? AND type IN ('coverage_plan','contact')")->execute([$ps, $qv, $id]);
+            if ($ps !== null) {
+                if (vg_crm_ready()) { try { db()->prepare("UPDATE leads SET contacted_at = CURRENT_TIMESTAMP WHERE id = ? AND contacted_at IS NULL AND status = 'new'")->execute([$id]); } catch (Throwable $e) { error_log('leads.contacted_at: ' . $e->getMessage()); } }
+                db()->prepare("UPDATE leads SET status = 'contacted' WHERE id = ? AND status = 'new' AND type IN ('coverage_plan','contact')")->execute([$id]);
+            }
+            flash_set($ps === null ? 'اتشالت مرحلة المشروع.' : 'اتحفظت مرحلة المشروع: ' . vg_project_stages()[$ps] . '.');
+        }
         if (isset($_POST['assigned_to']) && can('leads')) { db()->prepare('UPDATE leads SET assigned_to = ? WHERE id = ?')->execute([((int)$_POST['assigned_to']) ?: null, $id]); }
         if (!empty($_POST['delete']) && can('orders_delete')) {
             // Deleting an order must not lose reserved units.

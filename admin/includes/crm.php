@@ -14,6 +14,20 @@ function vg_crm_ready(): bool {
     return $ok;
 }
 
+/** True once leads has project_stage and quote_value (migration-projects.sql). */
+function vg_projects_ready(): bool {
+    static $ok = null;
+    if ($ok !== null) return $ok;
+    try { db()->query('SELECT project_stage, quote_value FROM leads LIMIT 0'); $ok = true; }
+    catch (Throwable $e) { $ok = false; }
+    return $ok;
+}
+
+/** Project stages for a prospect: site survey, quote, installation, done. */
+function vg_project_stages(): array {
+    return ['survey' => 'معاينة', 'quote' => 'عرض سعر', 'install' => 'تركيب', 'done' => 'تم التركيب'];
+}
+
 /** Today's date by the database clock (created_at is written by it); PHP's date when unavailable. */
 function vg_db_today(): string {
     static $d = null;
